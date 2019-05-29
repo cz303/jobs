@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 services:
   db:
@@ -7,18 +7,14 @@ services:
       - diga_network
 
   web:
+    restart: always
     build: .
     command: python apps/manage.py runserver 0.0.0.0:8000
     environment:
-      # указать внешний хост приложения
       - VIRTUAL_HOST=robosapiens.icu
-      # указать порт на котором внутри работает приложение
       - VIRTUAL_PORT=8066
-      # указать внешний хост для выдачи сертификата
       - LETSENCRYPT_HOST=robosapiens.icu
-      # указать емайл для выдачи серитификата
       - LETSENCRYPT_EMAIL=admin@robosapiens.icu
-      - NGINX_PROXY_CONTAINER=nginx-proxy
     volumes:
       - .:/app
     ports:
@@ -29,35 +25,38 @@ services:
       - db
 
   nginx-proxy:
+    restart: always
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
     labels:
-      # такой лейбл позволит контейнеру с цертботом понять, какой из
-      # запущенных nginx - реверс-прокси.
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
-#    volumes_from:
-#      - nginx-proxy
     networks:
       - diga_network
     ports:
       - "80:80"
       - "443:443"
-      # - "8066:8066"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - /data/nginx/certs:/etc/nginx/certs:ro
-      - /data/nginx/vhost.d:/etc/nginx/vhost.d:ro
-      - /usr/share/nginx/html
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "certs:/etc/nginx/certs:ro"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
 
   letsencrypt-companion:
+    restart: always
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt-companion
+    depends_on:
+      - nginx-proxy
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "certs:/etc/nginx/certs:rw"
     networks:
       - diga_network
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /data/nginx/certs:/etc/nginx/certs:rw
-      - /data/nginx/vhost.d:/etc/nginx/vhost.d:rw
+
+volumes:
+  certs:
 
 networks:
   diga_network:
