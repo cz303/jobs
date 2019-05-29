@@ -9,15 +9,8 @@ services:
   web:
     build: .
     command: python apps/manage.py runserver 0.0.0.0:8000
-    environment:
-      # указать внешний хост приложения
-      - VIRTUAL_HOST=robosapiens.icu
-      # указать порт на котором внутри работает приложение
-      - VIRTUAL_PORT=8066
-      # указать внешний хост для выдачи сертификата
-      - LETSENCRYPT_HOST=robosapiens.icu
-      # указать емайл для выдачи серитификата
-      - LETSENCRYPT_EMAIL=alexandrvirtual@gmail.com
+    env_file:
+      - .env
     volumes:
       - .:/app
     ports:
