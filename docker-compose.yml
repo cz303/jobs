@@ -35,8 +35,8 @@ services:
       # такой лейбл позволит контейнеру с цертботом понять, какой из
       # запущенных nginx - реверс-прокси.
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
-    volumes_from:
-      - nginx-proxy
+#    volumes_from:
+#      - nginx-proxy
     networks:
       - diga_network
     ports:
