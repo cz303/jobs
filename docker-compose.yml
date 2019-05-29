@@ -4,23 +4,20 @@ services:
   db:
     image: postgres
     networks:
-      - diga_network
+      - jobs_network
 
   web:
     restart: always
     build: .
     command: python apps/manage.py runserver 0.0.0.0:8000
-    environment:
-      - VIRTUAL_HOST=robosapiens.icu
-      - VIRTUAL_PORT=8066
-      - LETSENCRYPT_HOST=robosapiens.icu
-      - LETSENCRYPT_EMAIL=admin@robosapiens.icu
+    env_file:
+      - .env
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     networks:
-      - diga_network
+      - jobs_network
     depends_on:
       - db
 
@@ -31,7 +28,7 @@ services:
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
     networks:
-      - diga_network
+      - jobs_network
     ports:
       - "80:80"
       - "443:443"
@@ -53,11 +50,11 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "certs:/etc/nginx/certs:rw"
     networks:
-      - diga_network
+      - jobs_network
 
 volumes:
   certs:
 
 networks:
-  diga_network:
+  jobs_network:
     external: true
