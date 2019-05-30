@@ -1,11 +1,6 @@
 version: '2'
 
 services:
-  db:
-    image: postgres
-    networks:
-      - jobs_network
-
   web:
     restart: always
     build: .
@@ -18,8 +13,6 @@ services:
       - "8000:8000"
     networks:
       - jobs_network
-    depends_on:
-      - db
 
   nginx-proxy:
     restart: always
