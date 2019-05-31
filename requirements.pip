@@ -12,6 +12,7 @@ ipython==7.5.0
 ipython-genutils==0.2.0
 jedi==0.13.3
 Markdown==3.1.1
+marshmallow==3.0.0rc6
 mccabe==0.6.1
 parso==0.4.0
 pexpect==4.7.0
