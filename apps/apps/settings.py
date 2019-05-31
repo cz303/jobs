@@ -32,6 +32,7 @@ DOMAIN = f'https://{HOST}'
 ALLOWED_HOSTS = [
     HOST,
     'localhost',
+    'robosapiens.icu',
 ]
 
 # Application definition
