@@ -1,6 +1,6 @@
-from .parser import Parser
-from .text import Text
-from .markup import Markup
+from bot.parser import Parser
+from bot.text import Text
+from bot.markup import Markup
 
 
 class Dialog:

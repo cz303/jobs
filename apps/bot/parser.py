@@ -1,4 +1,4 @@
-from .serialization import MessageSchema
+from bot.serialization import MessageSchema
 import ujson
 
 

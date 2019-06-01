@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import BotJobsView
+from bot.views import BotJobsView
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 

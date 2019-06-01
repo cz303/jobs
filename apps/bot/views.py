@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.views import View
-from .set_web_hook import SetWebHook
-from .dialog import Dialog
+from bot.set_web_hook import SetWebHook
+from bot.dialog import Dialog
 
 set_web_hook = SetWebHook()
 
