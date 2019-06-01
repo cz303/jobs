@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.views import View
 from bot.set_web_hook import SetWebHook
-from bot.dialog import Dialog
+from bot.menu import Menu
 
 set_web_hook = SetWebHook()
 
@@ -9,5 +9,5 @@ set_web_hook = SetWebHook()
 class BotJobsView(View):
     def post(self, request):
         bot = set_web_hook.bot
-        Dialog(request=request, bot=bot).send()
+        Menu(request=request, bot=bot).send()
         return HttpResponse(status=200)

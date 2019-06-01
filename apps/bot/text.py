@@ -39,3 +39,11 @@ class Text:
 
     def how_we_are_working(self):
         pass
+
+    def create_job(self):
+        self.text = '<b>Вибери категорию!</b>\n Для того чтобы я смог делать' \
+                    ' точные рассылки и показывать твою вакансию только' \
+                    ' потенциальным кандидатам тебе нужно выбрать категорию.' \
+                    '<a href="https://telegra.ph/file/4381281c14528aacd99ed' \
+                    '.jpg"> &#160;</a>'
+        return self.text
