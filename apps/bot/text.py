@@ -1,6 +1,21 @@
+import typing
+
+
 class Text:
-    def __init__(self, text=None):
-        self.text = text
+    def __init__(self, text: typing.Text = None):
+        self._text = text
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        self._text = value
+
+    @text.deleter
+    def text(self):
+        del self._text
 
     def start_menu(self):
         self.text = "Выбери аккаунт, кем хочешь быть!"
