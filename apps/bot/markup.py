@@ -4,6 +4,7 @@ from telebot.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
+from collections import defaultdict
 
 __all__ = ['Markup']
 
@@ -12,14 +13,11 @@ class Markup:
     def __init__(self):
         self.markup = ReplyKeyboardMarkup()
         self.markup.resize_keyboard = True
+        self.markup.one_time_keyboard = True
 
         self.inline = InlineKeyboardMarkup()
 
-    def start_menu(self):
-        texts = ['🏬 Работодатель', '👨‍💻 Работник']
-        return self.create(texts)
-
-    def create(self, texts: list, inline=None):
+    def send(self, texts: list, inline=None):
         if inline:
             for text in texts:
                 if text == 'Отправить!':
@@ -42,45 +40,75 @@ class Markup:
                 self.markup.row(KeyboardButton(text=text))
         return self.markup
 
+    def start_menu(self):
+        texts = ['🏬 Работодатель', '👨‍💻 Работник']
+        return self.send(texts)
+
     def employer(self):
         texts = ['📬 Рассказать друзьям', 'Создать вакансию', 'Мои вакансии',
                  'Мой счет', 'Как мы работаем?', '🏬 Изменить аккаунт']
-        return self.create(texts)
+        return self.send(texts)
 
     def worker(self):
         texts = ['📬 Рассказать друзьям', 'Создать резюме', 'Мои резюме',
                  'Поиск вакансий', 'Как мы работаем?', '🏬 Изменить аккаунт']
-        return self.create(texts)
+        return self.send(texts)
 
     def tell_friends(self):
         texts = ['Отправить!']
-        return self.create(texts=texts, inline=True)
+        return self.send(texts=texts, inline=True)
+
+    @classmethod
+    def get_data(cls):
+        data = defaultdict(list)
+        data['1. HR, управление персоналом'] = [
+            '◀️ Назад',
+            'Менеджер',
+            'Рекрутер',
+            'Инспектор',
+            'Специалист по обучению персонала',
+            'Специалист по охране труда',
+            'Психолог',
+            'Инженер']
+        data['2. IT, WEB специалисты'] = [
+            '◀️ Назад',
+            'CEO | Product Manager',
+            '​​​​​​​Java',
+            'C# | .NET',
+            'JavaScript | Front-End | HTML',
+            'Node.js',
+            'PHP',
+            'Python',
+            'Ruby',
+            'Android',
+            'iOS | macOS',
+            'C | C++ | Embedded',
+            'Golang',
+            'Scala',
+            'Дизайнери | UI | UX',
+            'QA Automation | Manual',
+            'Project Manager',
+            'DevOps | Sysadmin']
+        return data
 
     @property
     def categories(self):
-        return [
-            '1. HR, управление персоналом',
-            '2. IT, WEB специалисты',
-            '3. Работа для студентов',
-            '4. Реклама, маркетинг, PR',
-            '5. Бухгалтерия, финансы, учет | аудит',
-            '6. Туризм и спорт',
-            '7. Юриспруденция, право',
-            '8. Гостиничный бизнес',
-            '9. Дизайн, творчество',
-            '10. Домашний сервис',
-            '11. Консалтинг',
-            '12. Красота и SPA-услуги',
-            '13. Логистика, доставка, склад',
-            '14. Медицина, фармацевтика',
-            '15. Недвижимость и страхование',
-            '16. Офисный персонал',
-            '17. Ресторанный бизнес, кулинария',
-            '18. Сельское хозяйство, агробизнеc',
-            '19. Сфера развлечений',
-            '20. Торговля, продажи, закупки',
-            '21. Транспорт, автосервис'
-        ]
+        return list(map(lambda x: x, self.get_data().keys()))
 
-    def create_job(self):
-        return self.create(self.categories, inline=True)
+    @property
+    def get_sub_categories(self):
+        return list(map(lambda x: x, self.get_data().values()))
+
+    def send_categories(self):
+        return self.send(self.categories, inline=True)
+
+    def get_category(self, category: str):
+        return defaultdict(list, filter(lambda x: x[0] == category,
+                                        self.get_data().items()))
+
+    def send_sub_category(self, category):
+        return self.send(self.get_category(
+            category=category).get(category, []), inline=True)
+
+    def create_job(self, category):
+        pass

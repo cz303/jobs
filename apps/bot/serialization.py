@@ -5,7 +5,8 @@ from marshmallow import (
 
 __all__ = [
     'CallbackQuerySchema',
-    'MessageSchema'
+    'MessageSchema',
+    'EditDataCallbackQuery'
 ]
 
 
@@ -37,6 +38,10 @@ class InlineMessage(Message):
     reply_markup = fields.List(fields.List(fields.Dict()))
 
 
+class EditDateInlineMessage(InlineMessage):
+    edit_date = fields.Integer()
+
+
 class MessageSchema(Schema):
     message = fields.Nested(Message)
     update_id = fields.Integer()
@@ -50,6 +55,15 @@ class CallbackQuery(Schema):
     data = fields.String()
 
 
+class EditCallbackQuery(CallbackQuery):
+    message = fields.Nested(EditDateInlineMessage)
+
+
 class CallbackQuerySchema(Schema):
     update_id = fields.Integer()
     callback_query = fields.Nested(CallbackQuery)
+
+
+class EditDataCallbackQuery(Schema):
+    update_id = fields.Integer()
+    callback_query = fields.Nested(EditCallbackQuery)

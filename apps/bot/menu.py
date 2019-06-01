@@ -13,6 +13,7 @@ class Menu:
         self.text = Text()
         self.markup = Markup()
         self.chat_id = self.parser.chat_id()
+        self.message_id = self.parser.message_id()
 
     def send(self):
         text = self.parser.text()
@@ -36,11 +37,25 @@ class Menu:
             self.how_we_are_working()
 
         elif text == 'Создать вакансию':
-            self.create_job()
+            self.send_categories()
+
+        elif text in self.markup.categories:
+            self.send_sub_category(category=text)
+
+        elif text in self.markup.get_sub_categories:
+            self.create_job(text)
 
     def send_message(self, text, reply_markup=None):
         self.bot.send_message(
             chat_id=self.chat_id,
+            text=text,
+            parse_mode='HTML',
+            reply_markup=reply_markup)
+
+    def edit_message_text(self, text, reply_markup=None):
+        self.bot.edit_message_text(
+            chat_id=self.chat_id,
+            message_id=self.message_id,
             text=text,
             parse_mode='HTML',
             reply_markup=reply_markup)
@@ -72,7 +87,17 @@ class Menu:
         text = self.text.how_we_are_working()
         self.send_message(text=text)
 
-    def create_job(self):
-        text = self.text.create_job()
-        reply_markup = self.markup.create_job()
+    def send_categories(self):
+        text = self.text.send_categories()
+        reply_markup = self.markup.send_categories()
         self.send_message(text=text, reply_markup=reply_markup)
+
+    def send_sub_category(self, category):
+        text = self.text.send_sub_category()
+        reply_markup = self.markup.send_sub_category(category)
+        self.edit_message_text(text=text, reply_markup=reply_markup)
+
+    def create_job(self, category):
+        text = self.text.create_job()
+        reply_markup = self.markup.create_job(category)
+        self.edit_message_text(text=text, reply_markup=reply_markup)
