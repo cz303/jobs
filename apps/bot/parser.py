@@ -32,6 +32,6 @@ class Parser:
 
     def text(self):
         if 'callback_query' in self.data:
-            return self.data['callback_query']['message']['text']
+            return self.data['callback_query']['data']
         else:
             return self.data['message']['text']
