@@ -34,11 +34,16 @@ class Message(Schema):
     text = fields.String()
 
 
+class ReplyMarkup(Schema):
+    inline_keyboard = fields.List(fields.List(fields.Dict()))
+
+
 class InlineMessage(Message):
-    reply_markup = fields.List(fields.List(fields.Dict()))
+    reply_markup = fields.Nested(ReplyMarkup)
 
 
-class EditDateInlineMessage(InlineMessage):
+class InlineMessageEditDate(Message):
+    reply_markup = fields.Nested(ReplyMarkup)
     edit_date = fields.Integer()
 
 
@@ -47,16 +52,21 @@ class MessageSchema(Schema):
     update_id = fields.Integer()
 
 
-class CallbackQuery(Schema):
+class CallbackQueryEditDate(Schema):
     id = fields.String()
     user = fields.Nested(User, data_key='from')
-    message = fields.Nested(InlineMessage)
+    message = fields.Nested(InlineMessageEditDate)
     chat_instance = fields.String()
     data = fields.String()
 
 
-class EditCallbackQuery(CallbackQuery):
-    message = fields.Nested(EditDateInlineMessage)
+class CallbackQuery(CallbackQueryEditDate):
+    message = fields.Nested(InlineMessage)
+    chat = fields.Nested(Chat)
+    date = fields.Integer()
+    text = fields.String()
+    entities = fields.List(fields.Dict())
+    reply_markup = fields.Nested(ReplyMarkup)
 
 
 class CallbackQuerySchema(Schema):
@@ -66,4 +76,4 @@ class CallbackQuerySchema(Schema):
 
 class EditDataCallbackQuery(Schema):
     update_id = fields.Integer()
-    callback_query = fields.Nested(EditCallbackQuery)
+    callback_query = fields.Nested(CallbackQueryEditDate)
