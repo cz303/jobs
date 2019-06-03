@@ -1,6 +1,7 @@
 from bot.parser import Parser
 from bot.text import Text
 from bot.markup import Markup
+from telebot.apihelper import ApiException
 
 __all__ = ['Menu']
 
@@ -36,7 +37,9 @@ class Menu:
         elif text == '‍Как мы работаем?':
             self.how_we_are_working()
 
-        elif text == 'Создать вакансию':
+        elif text == 'Создать вакансию' or \
+                text == 'Создать резюме' or \
+                text == '◀️ Назад':
             self.send_categories()
 
         elif text in self.markup.categories:
@@ -90,7 +93,10 @@ class Menu:
     def send_categories(self):
         text = self.text.send_categories()
         reply_markup = self.markup.send_categories()
-        self.send_message(text=text, reply_markup=reply_markup)
+        try:
+            self.edit_message_text(text=text, reply_markup=reply_markup)
+        except ApiException:
+            self.send_message(text=text, reply_markup=reply_markup)
 
     def send_sub_category(self, category):
         text = self.text.send_sub_category()
