@@ -46,7 +46,10 @@ class Menu:
             self.send_sub_category(category=text)
 
         elif text in self.markup.get_sub_categories:
-            self.create_job(text)
+            self.create_job()
+
+        else:
+            print(text)
 
     def send_message(self, text, reply_markup=None):
         self.bot.send_message(
@@ -103,7 +106,6 @@ class Menu:
         reply_markup = self.markup.send_sub_category(category)
         self.edit_message_text(text=text, reply_markup=reply_markup)
 
-    def create_job(self, category):
+    def create_job(self):
         text = self.text.create_job()
-        reply_markup = self.markup.create_job(category)
-        self.edit_message_text(text=text, reply_markup=reply_markup)
+        self.edit_message_text(text=text)

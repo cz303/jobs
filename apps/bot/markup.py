@@ -5,6 +5,7 @@ from telebot.types import (
     InlineKeyboardButton
 )
 from collections import defaultdict
+import itertools
 
 __all__ = ['Markup']
 
@@ -97,7 +98,7 @@ class Markup:
 
     @property
     def get_sub_categories(self):
-        return list(map(lambda x: x, self.get_data().values()))
+        return list(itertools.chain(*self.get_data().values()))
 
     def send_categories(self):
         return self.send(self.categories, inline=True)
