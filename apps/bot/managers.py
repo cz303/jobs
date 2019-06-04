@@ -1,21 +1,23 @@
 from .models import User
-from django.db.utils import IntegrityError
+
+__all__ = ['UserManager']
 
 
 class UserManager:
-    @classmethod
-    def get_or_create(cls, user_id, profile, username):
-        try:
-            User.objects.create(
-                user_id=user_id,
-                profile=profile,
-                username=username
-            )
-        except IntegrityError:
-            return User.objects.get(user_id=user_id)
+    def __init__(self, user_id, username):
+        self.user_id = user_id
+        self.username = username
 
-    @classmethod
-    def update_user(cls, user_id, username, profile):
-        return User.objects.update(user_id=user_id,
-                                   username=username,
-                                   profile=profile)
+    def create(self, profile=None):
+        if not profile:
+            profile = 1
+
+        User.objects.get_or_create(
+            user_id=self.user_id,
+            username=self.username,
+            profile=profile)
+
+    def update_profile(self, profile):
+        user = User.objects.get(user_id=self.user_id)
+        user.profile = profile
+        user.save()

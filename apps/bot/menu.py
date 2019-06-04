@@ -4,6 +4,7 @@ from bot.markup import Markup
 from telebot.apihelper import ApiException
 from .managers import UserManager
 
+
 __all__ = ['Menu']
 
 
@@ -18,32 +19,21 @@ class Menu:
         self.message_id = self.parser.message_id()
         self.user_id = self.parser.user_id()
         self.username = self.parser.username()
-        self.user = UserManager.get_or_create(
-            user_id=self.user_id,
-            profile=1,
-            username=self.username
-        )
+        self.user = UserManager(user_id=self.user_id, username=self.username)
 
     def send(self):
         text = self.parser.text()
 
         if text == '/start':
+            self.user.create()
             self.start_menu()
 
         elif text == '🏬 Работодатель':
-            UserManager.update_user(
-                user_id=self.user_id,
-                profile=1,
-                username=self.username
-            )
+            self.user.update_profile(profile=1)
             self.employer()
 
         elif text == '👨‍💻 Работник':
-            UserManager.update_user(
-                user_id=self.user_id,
-                profile=2,
-                username=self.username
-            )
+            self.user.update_profile(profile=2)
             self.worker()
 
         elif text == '📬 Рассказать друзьям':
