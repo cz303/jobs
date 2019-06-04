@@ -22,8 +22,8 @@ class UserManager:
         user.profile = profile
         user.save()
 
-    def get_user(self, user_id):
+    def get_user(self):
         try:
-            return User.objects.get(user_id=user_id)
+            return User.objects.get(user_id=self.user_id)
         except User.DoesNotExist:
             pass
