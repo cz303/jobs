@@ -32,17 +32,14 @@ class Moderation:
     )
 
 
-class Job(models.Model):
+class CommonInfo(models.Model):
     class Meta:
-        db_table = 'jobs'
+        abstract = True
 
     id = models.AutoField(primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(max_length=255, null=True)
     position = models.CharField(max_length=255, null=True)
-    looking_for = models.TextField(max_length=255, null=True)
-    wage = models.CharField(max_length=255, null=True)
-    city = models.CharField(max_length=255, blank=True, null=True)
     remote = models.BooleanField(default=False)
     experience = models.CharField(max_length=255, null=True)
     description = models.TextField(max_length=1000, null=True)
@@ -50,36 +47,32 @@ class Job(models.Model):
     is_active = models.BooleanField(default=False)
     failure_reason = models.TextField(max_length=255, blank=True, null=True)
     publish = models.BooleanField(default=False)
-    dispatch = models.IntegerField(default=0)
     created = models.DateField(auto_now=True, editable=False)
     deleted = models.BooleanField(default=False)
+
+
+class Job(CommonInfo):
+    class Meta:
+        db_table = 'jobs'
+
+    looking_for = models.TextField(max_length=255, null=True)
+    wage = models.CharField(max_length=255, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    dispatch = models.IntegerField(default=0)
 
     def __str__(self):
         return self.position
 
 
-class Resume(models.Model):
+class Resume(CommonInfo):
     class Meta:
         db_table = 'resumes'
 
-    id = models.AutoField(primary_key=True, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.CharField(max_length=255)
-    position = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    age = models.CharField(max_length=255)
-    city = models.CharField(max_length=255, blank=True)
-    lang = models.CharField(max_length=255)
-    experience = models.CharField(max_length=255)
-    education = models.TextField(max_length=255)
-    description = models.TextField(max_length=1000)
-    remote = models.BooleanField(default=False)
-    moderation = models.IntegerField(choices=Moderation.STATUS, default=1)
-    is_active = models.BooleanField(default=False)
-    failure_reason = models.TextField(max_length=255, blank=True, null=True)
-    publish = models.BooleanField(default=False)
-    created = models.DateField(auto_now=True, editable=False)
-    deleted = models.BooleanField(default=False)
+    name = models.CharField(max_length=255, null=True)
+    age = models.CharField(max_length=255, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    lang = models.CharField(max_length=255, null=True)
+    education = models.TextField(max_length=255, null=True)
 
     def __str__(self):
         return self.position
@@ -116,3 +109,31 @@ class Statistics(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class IDialog(models.Model):
+    class Meta:
+        abstract = True
+
+    city = models.BooleanField(default=False)
+    remote = models.BooleanField(default=False)
+    experience = models.BooleanField(default=False)
+    description = models.BooleanField(default=False)
+
+
+class JobDialog(IDialog):
+    class Meta:
+        db_table = 'jobdialog'
+
+    looking_for = models.BooleanField(default=False)
+    wage = models.BooleanField(default=False)
+
+
+class ResumeDialog(IDialog):
+    class Meta:
+        db_table = 'resumedialog'
+
+    name = models.BooleanField(default=False)
+    age = models.BooleanField(default=False)
+    lang = models.BooleanField(default=False)
+    education = models.BooleanField(default=False)
