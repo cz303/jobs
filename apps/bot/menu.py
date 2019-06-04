@@ -2,6 +2,7 @@ from bot.parser import Parser
 from bot.text import Text
 from bot.markup import Markup
 from telebot.apihelper import ApiException
+from .managers import UserManager
 
 __all__ = ['Menu']
 
@@ -15,6 +16,13 @@ class Menu:
         self.markup = Markup()
         self.chat_id = self.parser.chat_id()
         self.message_id = self.parser.message_id()
+        self.user_id = self.parser.user_id()
+        self.username = self.parser.username()
+        self.user = UserManager.get_or_create(
+            user_id=self.user_id,
+            profile=1,
+            username=self.username
+        )
 
     def send(self):
         text = self.parser.text()
@@ -23,9 +31,19 @@ class Menu:
             self.start_menu()
 
         elif text == '🏬 Работодатель':
+            UserManager.update_user(
+                user_id=self.user_id,
+                profile=1,
+                username=self.username
+            )
             self.employer()
 
         elif text == '👨‍💻 Работник':
+            UserManager.update_user(
+                user_id=self.user_id,
+                profile=2,
+                username=self.username
+            )
             self.worker()
 
         elif text == '📬 Рассказать друзьям':
@@ -34,8 +52,8 @@ class Menu:
         elif text == '🏬 Изменить аккаунт':
             self.start_menu()
 
-        elif text == '‍Как мы работаем?':
-            self.how_we_are_working()
+        elif text == 'Как мы работаем?':
+            self.how_we_are_working(user=self.user)
 
         elif text == 'Создать вакансию' or \
                 text == 'Создать резюме' or \
@@ -47,9 +65,6 @@ class Menu:
 
         elif text in self.markup.get_sub_categories:
             self.create_job()
-
-        else:
-            print(text)
 
     def send_message(self, text, reply_markup=None):
         self.bot.send_message(
@@ -88,9 +103,8 @@ class Menu:
         reply_markup = self.markup.tell_friends()
         self.send_message(text=text, reply_markup=reply_markup)
 
-    def how_we_are_working(self):
-        # get user
-        text = self.text.how_we_are_working()
+    def how_we_are_working(self, user):
+        text = self.text.how_we_are_working(user)
         self.send_message(text=text)
 
     def send_categories(self):

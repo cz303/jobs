@@ -46,3 +46,15 @@ class Parser:
             return self.data['callback_query']['message']['message_id']
         else:
             return self.data['message']['message_id']
+
+    def user_id(self):
+        if 'callback_query' in self.data:
+            return self.data['callback_query']['message']['user']['id']
+        else:
+            return self.data['message']['user']['id']
+
+    def username(self):
+        if 'callback_query' in self.data:
+            return self.data['callback_query']['message']['user']['username']
+        else:
+            return self.data['message']['user']['username']
