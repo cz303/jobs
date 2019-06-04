@@ -2,7 +2,8 @@ from bot.parser import Parser
 from bot.text import Text
 from bot.markup import Markup
 from telebot.apihelper import ApiException
-from .managers import UserManager
+from .user_manager import UserManager
+from .job_manager import JobManager
 
 
 __all__ = ['Menu']
@@ -43,7 +44,8 @@ class Menu:
             self.start_menu()
 
         elif text == 'Как мы работаем?':
-            self.how_we_are_working(user=self.user)
+            user = self.user.get_user(self.parser.user_id())
+            self.how_we_are_working(profile=user.profile)
 
         elif text == 'Создать вакансию' or \
                 text == 'Создать резюме' or \
@@ -51,10 +53,16 @@ class Menu:
             self.send_categories()
 
         elif text in self.markup.categories:
-            self.send_sub_category(category=text)
+            user = self.user.get_user(self.parser.user_id())
+            if user:
+                JobManager(user_id=user.id).create(category=text)
+                self.send_sub_category(category=text)
 
         elif text in self.markup.get_sub_categories:
-            self.create_job()
+            user = self.user.get_user(self.parser.user_id())
+            if user:
+                JobManager(user_id=user.id).update_position(position=text)
+                self.create_job()
 
     def send_message(self, text, reply_markup=None):
         self.bot.send_message(
@@ -93,8 +101,8 @@ class Menu:
         reply_markup = self.markup.tell_friends()
         self.send_message(text=text, reply_markup=reply_markup)
 
-    def how_we_are_working(self, user):
-        text = self.text.how_we_are_working(user)
+    def how_we_are_working(self, profile):
+        text = self.text.how_we_are_working(profile)
         self.send_message(text=text)
 
     def send_categories(self):
@@ -112,4 +120,4 @@ class Menu:
 
     def create_job(self):
         text = self.text.create_job()
-        self.edit_message_text(text=text)
+        self.send_message(text=text)

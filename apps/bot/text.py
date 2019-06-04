@@ -37,8 +37,8 @@ class Text:
                     '"> &#160;</a>'
         return self.text
 
-    def how_we_are_working(self, user):
-        if user.profile == 2:
+    def how_we_are_working(self, profile):
+        if profile == 2:
             self.text = '<b>Как работает бот?</b>\nПосле публикации твоя ' \
                       'вакансия попадает в поиск вакансий,  где любой ' \
                       'заинтересованный кандидат сможет её найти.  Также мы ' \

@@ -38,7 +38,7 @@ class Job(models.Model):
 
     id = models.AutoField(primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.CharField(max_length=255)
+    category = models.CharField(max_length=255, null=True)
     position = models.CharField(max_length=255, null=True)
     looking_for = models.TextField(max_length=255, null=True)
     wage = models.CharField(max_length=255, null=True)

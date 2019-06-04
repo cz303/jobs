@@ -49,7 +49,7 @@ class Parser:
 
     def user_id(self):
         if 'callback_query' in self.data:
-            return self.data['callback_query']['message']['user']['id']
+            return self.data['callback_query']['user']['id']
         else:
             return self.data['message']['user']['id']
 
