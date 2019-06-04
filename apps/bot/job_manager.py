@@ -8,7 +8,7 @@ class JobManager:
         self.user_id = user_id
 
     def create(self, category):
-        Job.objects.get_or_create(
+        Job.objects.create(
             user_id=self.user_id, category=category)
 
     def update_position(self, position):

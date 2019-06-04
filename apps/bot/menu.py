@@ -44,7 +44,7 @@ class Menu:
             self.start_menu()
 
         elif text == 'Как мы работаем?':
-            user = self.user.get_user(self.parser.user_id())
+            user = self.user.get_user()
             self.how_we_are_working(profile=user.profile)
 
         elif text == 'Создать вакансию' or \
@@ -53,13 +53,13 @@ class Menu:
             self.send_categories()
 
         elif text in self.markup.categories:
-            user = self.user.get_user(self.parser.user_id())
+            user = self.user.get_user()
             if user:
                 JobManager(user_id=user.id).create(category=text)
                 self.send_sub_category(category=text)
 
         elif text in self.markup.get_sub_categories:
-            user = self.user.get_user(self.parser.user_id())
+            user = self.user.get_user()
             if user:
                 JobManager(user_id=user.id).update_position(position=text)
                 self.create_job()
