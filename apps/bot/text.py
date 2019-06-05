@@ -104,10 +104,26 @@ class Text:
                     '.jpg"> &#160;</a>'
         return self.text
 
-    def create_job(self):
+    def looking_for(self):
         self.text = '<b>1. Кого ты ищешь?</b>\nОпиши кратко в одном ' \
                     'предложении, кто тебе нужен. Смотри пример в предыдущем' \
                     ' сообщении.<a ' \
                     'href="https://telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg' \
                     '">&#160;</a>'
+        return self.text
+
+    def wage(self):
+        self.text = '<b>2. Заработная плата!</b>\nТеперь укажи размер ' \
+                    'заработной платы, чтобы увеличить заинтересованность ' \
+                    'у кандидатов. <a ' \
+                    'href="https://' \
+                    'telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def city(self):
+        self.text = '<b>3. Город!</b>\nНапиши город где предлагается ' \
+                    'данная вакансия, можно писать несколько городов ' \
+                    'через запятую.<a ' \
+                    'href="https://' \
+                    'telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>',
         return self.text

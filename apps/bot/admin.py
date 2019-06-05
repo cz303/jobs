@@ -4,12 +4,16 @@ from .models import (
     City,
     Resume,
     Job,
-    Statistics
+    Statistics,
+    JobDialog,
+    ResumeDialog
 )
 
 admin.site.register(User)
 admin.site.register(City)
 admin.site.register(Statistics)
+admin.site.register(JobDialog)
+admin.site.register(ResumeDialog)
 
 
 @admin.register(Resume)

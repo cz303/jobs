@@ -4,7 +4,7 @@ from bot.markup import Markup
 from telebot.apihelper import ApiException
 from .user_manager import UserManager
 from .job_manager import JobManager
-
+from .dialog_job_manager import DialogJobManager
 
 __all__ = ['Menu']
 
@@ -24,45 +24,40 @@ class Menu:
 
     def send(self):
         text = self.parser.text()
-
         if text == '/start':
-            self.user.create()
             self.start_menu()
-
         elif text == '🏬 Работодатель':
-            self.user.update_profile(profile=1)
             self.employer()
-
         elif text == '👨‍💻 Работник':
-            self.user.update_profile(profile=2)
             self.worker()
-
         elif text == '📬 Рассказать друзьям':
             self.tell_friends()
-
         elif text == '🏬 Изменить аккаунт':
             self.start_menu()
-
         elif text == 'Как мы работаем?':
-            user = self.user.get_user()
-            self.how_we_are_working(profile=user.profile)
-
+            self.how_we_are_working()
         elif text == 'Создать вакансию' or \
                 text == 'Создать резюме' or \
                 text == '◀️ Назад':
             self.send_categories()
-
         elif text in self.markup.categories:
-            user = self.user.get_user()
-            if user:
-                JobManager(user_id=user.id).create(category=text)
-                self.send_sub_category(category=text)
-
+            self.send_sub_category(category=text)
         elif text in self.markup.get_sub_categories:
-            user = self.user.get_user()
-            if user:
-                JobManager(user_id=user.id).update_position(position=text)
-                self.create_job()
+            self.looking_for(position=text)
+        elif self.check_looking_for():
+            self.wage(text=text)
+        elif self.check_wage():
+            self.city(text=text)
+
+    def check_looking_for(self):
+        user = self.user.get_user()
+        if user:
+            return DialogJobManager(user_id=user.id).check_looking_for()
+
+    def check_wage(self):
+        user = self.user.get_user()
+        if user:
+            return DialogJobManager(user_id=user.id).check_wage()
 
     def send_message(self, text, reply_markup=None):
         self.bot.send_message(
@@ -80,18 +75,19 @@ class Menu:
             reply_markup=reply_markup)
 
     def start_menu(self):
+        self.user.create()
         text = self.text.start_menu()
         reply_markup = self.markup.start_menu()
         self.send_message(text=text, reply_markup=reply_markup)
 
     def employer(self):
-        # найти юзера
+        self.user.update_profile(profile=1)
         text = self.text.employer()
         reply_markup = self.markup.employer()
         self.send_message(text=text, reply_markup=reply_markup)
 
     def worker(self):
-        # add user
+        self.user.update_profile(profile=2)
         text = self.text.worker()
         reply_markup = self.markup.worker()
         self.send_message(text=text, reply_markup=reply_markup)
@@ -101,8 +97,9 @@ class Menu:
         reply_markup = self.markup.tell_friends()
         self.send_message(text=text, reply_markup=reply_markup)
 
-    def how_we_are_working(self, profile):
-        text = self.text.how_we_are_working(profile)
+    def how_we_are_working(self):
+        user = self.user.get_user()
+        text = self.text.how_we_are_working(profile=user.profile)
         self.send_message(text=text)
 
     def send_categories(self):
@@ -114,10 +111,33 @@ class Menu:
             self.send_message(text=text, reply_markup=reply_markup)
 
     def send_sub_category(self, category):
-        text = self.text.send_sub_category()
-        reply_markup = self.markup.send_sub_category(category)
-        self.edit_message_text(text=text, reply_markup=reply_markup)
+        user = self.user.get_user()
+        if user:
+            JobManager(user_id=user.id).create(category=category)
+            text = self.text.send_sub_category()
+            reply_markup = self.markup.send_sub_category(category)
+            self.edit_message_text(text=text, reply_markup=reply_markup)
 
-    def create_job(self):
-        text = self.text.create_job()
-        self.send_message(text=text)
+    def looking_for(self, position):
+        user = self.user.get_user()
+        if user:
+            JobManager(user_id=user.id).update_position(position=position)
+            DialogJobManager(user_id=user.id).create()
+            text = self.text.looking_for()
+            self.send_message(text=text)
+
+    def wage(self, text):
+        user = self.user.get_user()
+        if user:
+            JobManager(user_id=user.id).update_wage(wage=text)
+            DialogJobManager(user_id=user.id).wage()
+            text = self.text.wage()
+            self.send_message(text=text)
+
+    def city(self, text):
+        user = self.user.get_user()
+        if user:
+            JobManager(user_id=user.id).update_city(city=text)
+            DialogJobManager(user_id=user.id).city()
+            text = self.text.city()
+            self.send_message(text=text)

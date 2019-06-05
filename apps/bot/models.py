@@ -32,12 +32,19 @@ class Moderation:
     )
 
 
-class CommonInfo(models.Model):
+class ICommonInfo(models.Model):
     class Meta:
         abstract = True
 
     id = models.AutoField(primary_key=True, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=-1)
+    created = models.DateField(auto_now=True, editable=False)
+
+
+class CommonInfo(ICommonInfo):
+    class Meta:
+        abstract = True
+
     category = models.CharField(max_length=255, null=True)
     position = models.CharField(max_length=255, null=True)
     remote = models.BooleanField(default=False)
@@ -111,7 +118,7 @@ class Statistics(models.Model):
         return self.user.username
 
 
-class IDialog(models.Model):
+class IDialog(ICommonInfo):
     class Meta:
         abstract = True
 
