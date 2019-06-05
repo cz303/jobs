@@ -125,5 +125,44 @@ class Text:
                     'данная вакансия, можно писать несколько городов ' \
                     'через запятую.<a ' \
                     'href="https://' \
-                    'telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>',
+                    'telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def experience(self):
+        self.text = '<b>4. Опыт работы!</b>\nТеперь укажи, кандидатов ' \
+                    'с каким опытом работы ты ищешь?<a href=' \
+                    '"https://telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">' \
+                    '&#160;</a>'
+        return self.text
+
+    def description(self):
+        self.text = '<b>5. Описание вакансии!</b>\nОпиши как можно ' \
+                    'подробнее свою вакансию, это позволит увеличить ' \
+                    'количество отзывов потенциальных кандидатов.' \
+                    '<a href=' \
+                    '"https://telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">' \
+                    '&#160;</a>'
+        return self.text
+
+    def write_to_employer(self):
+        self.text = '<b>6. Написать работодателю!</b>\nУкажи свой username,' \
+                    ' чтобы заинтересованные кандидаты могли с тобой' \
+                    ' связаться.<a href="https:' \
+                    '//telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def where_to_find_username_link(self):
+        self.text = 'https://youtu.be/BSije4BPP7E'
+        return self.text
+
+    def where_to_find_username(self):
+        self.text = 'Укажите пожалуйста свой username,' \
+                    ' чтобы продолжить заполнение вакансий!'
+        return self.text
+
+    def moderation(self):
+        self.text = '<b>Модерация!</b>\nВакансия отправлена на модерацию,' \
+                    ' подожди пожалуйста. После модерации я пришлю тебе' \
+                    ' готовый текст.<a href="https:' \
+                    '//telegra.ph/file/8e149b7bf8849955c3212.jpg">&#160;</a>'
         return self.text

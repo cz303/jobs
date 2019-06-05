@@ -111,5 +111,6 @@ class Markup:
         return self.send(self.get_category(
             category=category).get(category, []), inline=True)
 
-    def create_job(self, category):
-        pass
+    def write_to_employer(self):
+        texts = ['Где искать username?']
+        return self.send(texts=texts, inline=True)

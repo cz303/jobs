@@ -66,9 +66,10 @@ class Job(CommonInfo):
     wage = models.CharField(max_length=255, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
     dispatch = models.IntegerField(default=0)
+    write_to_employer = models.CharField(max_length=255, null=True)
 
     def __str__(self):
-        return self.position
+        return self.category
 
 
 class Resume(CommonInfo):
@@ -82,7 +83,7 @@ class Resume(CommonInfo):
     education = models.TextField(max_length=255, null=True)
 
     def __str__(self):
-        return self.position
+        return self.category
 
 
 class City(models.Model):
@@ -134,6 +135,7 @@ class JobDialog(IDialog):
 
     looking_for = models.BooleanField(default=False)
     wage = models.BooleanField(default=False)
+    write_to_employer = models.BooleanField(default=False)
 
 
 class ResumeDialog(IDialog):

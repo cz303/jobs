@@ -5,6 +5,7 @@ from telebot.apihelper import ApiException
 from .user_manager import UserManager
 from .job_manager import JobManager
 from .dialog_job_manager import DialogJobManager
+import time
 
 __all__ = ['Menu']
 
@@ -48,6 +49,30 @@ class Menu:
             self.wage(text=text)
         elif self.check_wage():
             self.city(text=text)
+        elif self.check_city():
+            self.experience(text=text)
+        elif self.check_experience():
+            self.description(text=text)
+        elif self.check_description():
+            self.write_to_employer(text=text)
+        elif text == 'Где искать username?':
+            self.where_to_find_username_link()
+        elif self.check_write_to_employer():
+            self.moderation()
+
+    def moderation(self):
+        text = self.text.moderation()
+        self.send_message(text=text)
+
+    def where_to_find_username_link(self):
+        text = self.text.where_to_find_username_link()
+        self.send_message(text=text)
+        time.sleep(3.0)
+        self.where_to_find_username()
+
+    def where_to_find_username(self):
+        text = self.text.where_to_find_username()
+        self.send_message(text=text)
 
     def check_looking_for(self):
         user = self.user.get_user()
@@ -58,6 +83,26 @@ class Menu:
         user = self.user.get_user()
         if user:
             return DialogJobManager(user_id=user.id).check_wage()
+
+    def check_city(self):
+        user = self.user.get_user()
+        if user:
+            return DialogJobManager(user_id=user.id).check_city()
+
+    def check_experience(self):
+        user = self.user.get_user()
+        if user:
+            return DialogJobManager(user_id=user.id).check_experience()
+
+    def check_description(self):
+        user = self.user.get_user()
+        if user:
+            return DialogJobManager(user_id=user.id).check_description()
+
+    def check_write_to_employer(self):
+        user = self.user.get_user()
+        if user:
+            return DialogJobManager(user_id=user.id).check_write_to_employer()
 
     def send_message(self, text, reply_markup=None):
         self.bot.send_message(
@@ -122,6 +167,7 @@ class Menu:
         user = self.user.get_user()
         if user:
             JobManager(user_id=user.id).update_position(position=position)
+            DialogJobManager(user_id=user.id).clean()
             DialogJobManager(user_id=user.id).create()
             text = self.text.looking_for()
             self.send_message(text=text)
@@ -141,3 +187,29 @@ class Menu:
             DialogJobManager(user_id=user.id).city()
             text = self.text.city()
             self.send_message(text=text)
+
+    def experience(self, text):
+        user = self.user.get_user()
+        if user:
+            JobManager(user_id=user.id).update_experience(experience=text)
+            DialogJobManager(user_id=user.id).experience()
+            text = self.text.experience()
+            self.send_message(text=text)
+
+    def description(self, text):
+        user = self.user.get_user()
+        if user:
+            JobManager(user_id=user.id).update_description(description=text)
+            DialogJobManager(user_id=user.id).description()
+            text = self.text.description()
+            self.send_message(text=text)
+
+    def write_to_employer(self, text):
+        user = self.user.get_user()
+        if user:
+            JobManager(user_id=user.id).update_write_to_employer(
+                write_to_employer=text)
+            DialogJobManager(user_id=user.id).write_to_employer()
+            text = self.text.write_to_employer()
+            reply_markup = self.markup.write_to_employer()
+            self.send_message(text=text, reply_markup=reply_markup)
