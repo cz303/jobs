@@ -7,7 +7,7 @@ from telebot.types import (
 from collections import defaultdict
 import itertools
 
-__all__ = ['Markup']
+__all__ = ('Markup',)
 
 
 class Markup:

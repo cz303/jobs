@@ -166,3 +166,60 @@ class Text:
                     ' готовый текст.<a href="https:' \
                     '//telegra.ph/file/8e149b7bf8849955c3212.jpg">&#160;</a>'
         return self.text
+
+    def name(self):
+        self.text = '<b>1. Имя!</b>\nУкажи свое имя, чтобы работодатель' \
+                    ' знал как к тебе обращаться.' \
+                    '<a href=' \
+                    '"https://telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">' \
+                    '&#160;</a>'
+        return self.text
+
+    def age(self):
+        self.text = '<b>2. Возраст!</b>\nУкажи свой возраст.<a href=' \
+                    '"https://telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">' \
+                    '&#160;</a>'
+        return self.text
+
+    def work_city(self):
+        self.text = '<b>3. Желаемый город работы!</b>\nУкажи город в' \
+                    ' котором хочешь работать. Если хочешь работать ' \
+                    'отдаленно, нажми кнопку - "Отдаленная работа".<a ' \
+                    'href="https://telegra.ph/' \
+                    'file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def lang(self):
+        self.text = '<b>4. Языки!</b>\nЧерез запятую укажи какими языками ' \
+                    'ты владеешь.<a href="https://' \
+                    'telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def education(self):
+        self.text = '<b>6. Образование!</b>\nУкажи где ты учился и в ' \
+                    'течении какого периода.<a href="https://' \
+                    'telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def work_experience(self):
+        self.text = '<b>5. Опыт работы!</b>\nТеперь укажи свой опыт ' \
+                    'работы на аналогичной должности. Это поможет быстрее ' \
+                    'и точнее найти работу именно для тебя.' \
+                    '<a href="https://telegra.ph/' \
+                    'file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def work_description(self):
+        self.text = '<b>7. О себе!</b>\nНапиши кратко о себе, чем ' \
+                    'занимался, каковы твои положительные и отрицательные' \
+                    ' черты, какие ожидания от работы. Не стесняйся ' \
+                    'рассказать о своих достижениях :)<a href="https://' \
+                    'telegra.ph/file/69270e02b6ad3bdd6a2b5.jpg">&#160;</a>'
+        return self.text
+
+    def work_moderation(self):
+        self.text = 'Замечательно, резюме отправлено на модерацию, ' \
+                    'подожди пожалуйста. После модерации я пришлю тебе ' \
+                    'готовый текст.<a href="https://' \
+                    'telegra.ph/file/8e149b7bf8849955c3212.jpg">&#160;</a>'
+        return self.text

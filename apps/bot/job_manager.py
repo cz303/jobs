@@ -1,6 +1,6 @@
 from .models import Job
 
-__all__ = ['JobManager']
+__all__ = ('JobManager',)
 
 
 class JobManager:

@@ -1,6 +1,6 @@
 from .models import JobDialog
 
-__all__ = ['DialogJobManager']
+__all__ = ('DialogJobManager',)
 
 
 class DialogJobManager:

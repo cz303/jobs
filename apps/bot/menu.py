@@ -1,13 +1,15 @@
+import time
 from bot.parser import Parser
 from bot.text import Text
 from bot.markup import Markup
 from telebot.apihelper import ApiException
 from .user_manager import UserManager
 from .job_manager import JobManager
+from .resume_manager import ResumeManager
 from .dialog_job_manager import DialogJobManager
-import time
+from .dialog_resume_manager import DialogResumeManager
 
-__all__ = ['Menu']
+__all__ = ('Menu',)
 
 
 class Menu:
@@ -44,13 +46,28 @@ class Menu:
         elif text in self.markup.categories:
             self.send_sub_category(category=text)
         elif text in self.markup.get_sub_categories:
-            self.looking_for(position=text)
+            if not self.looking_for(position=text):
+                self.name(position=text)
         elif self.check_looking_for():
             self.wage(text=text)
+        elif self.check_name():
+            self.age(text=text)
         elif self.check_wage():
             self.city(text=text)
+        elif self.check_age():
+            self.work_city(text=text)
         elif self.check_city():
             self.experience(text=text)
+        elif self.check_work_city():
+            self.lang(text=text)
+        elif self.check_lang():
+            self.work_experience(text=text)
+        elif self.check_work_experience():
+            self.education(text=text)
+        elif self.check_education():
+            self.work_description(text=text)
+        elif self.check_work_description():
+            self.work_moderation()
         elif self.check_experience():
             self.description(text=text)
         elif self.check_description():
@@ -59,6 +76,52 @@ class Menu:
             self.where_to_find_username_link()
         elif self.check_write_to_employer():
             self.moderation()
+
+    def work_city(self, text):
+        user = self.user.get_user()
+        if user and user.profile == 2:
+            ResumeManager(user_id=user.id).update_city(city=text)
+            DialogResumeManager(user_id=user.id).city()
+            text = self.text.work_city()
+            self.send_message(text=text)
+
+    def check_work_city(self):
+        user = self.user.get_user()
+        if user:
+            return DialogResumeManager(user_id=user.id).check_city()
+
+    def work_moderation(self):
+        user = self.user.get_user()
+        if user:
+            DialogResumeManager(user_id=user.id).clean()
+        text = self.text.work_moderation()
+        self.send_message(text=text)
+
+    def check_work_description(self):
+        user = self.user.get_user()
+        if user:
+            return DialogResumeManager(user_id=user.id).check_description()
+
+    def work_description(self, text):
+        user = self.user.get_user()
+        if user:
+            ResumeManager(user_id=user.id).update_description(description=text)
+            DialogResumeManager(user_id=user.id).description()
+            text = self.text.work_description()
+            self.send_message(text=text)
+
+    def check_education(self):
+        user = self.user.get_user()
+        if user:
+            return DialogResumeManager(user_id=user.id).check_education()
+
+    def work_experience(self, text):
+        user = self.user.get_user()
+        if user and user.profile == 2:
+            ResumeManager(user_id=user.id).update_experience(experience=text)
+            DialogResumeManager(user_id=user.id).experience()
+            text = self.text.work_experience()
+            self.send_message(text=text)
 
     def moderation(self):
         user = self.user.get_user()
@@ -82,6 +145,21 @@ class Menu:
         if user:
             return DialogJobManager(user_id=user.id).check_looking_for()
 
+    def check_name(self):
+        user = self.user.get_user()
+        if user:
+            return DialogResumeManager(user_id=user.id).check_name()
+
+    def check_age(self):
+        user = self.user.get_user()
+        if user:
+            return DialogResumeManager(user_id=user.id).check_age()
+
+    def check_lang(self):
+        user = self.user.get_user()
+        if user:
+            return DialogResumeManager(user_id=user.id).check_lang()
+
     def check_wage(self):
         user = self.user.get_user()
         if user:
@@ -96,6 +174,11 @@ class Menu:
         user = self.user.get_user()
         if user:
             return DialogJobManager(user_id=user.id).check_experience()
+
+    def check_work_experience(self):
+        user = self.user.get_user()
+        if user:
+            return DialogResumeManager(user_id=user.id).check_experience()
 
     def check_description(self):
         user = self.user.get_user()
@@ -161,18 +244,30 @@ class Menu:
     def send_sub_category(self, category):
         user = self.user.get_user()
         if user:
-            JobManager(user_id=user.id).create(category=category)
+            if user.profile == 1:
+                JobManager(user_id=user.id).create(category=category)
+            else:
+                ResumeManager(user_id=user.id).create(category=category)
             text = self.text.send_sub_category()
             reply_markup = self.markup.send_sub_category(category)
             self.edit_message_text(text=text, reply_markup=reply_markup)
 
     def looking_for(self, position):
         user = self.user.get_user()
-        if user:
+        if user and user.profile == 1:
             JobManager(user_id=user.id).update_position(position=position)
             DialogJobManager(user_id=user.id).clean()
             DialogJobManager(user_id=user.id).create()
             text = self.text.looking_for()
+            self.send_message(text=text)
+
+    def name(self, position):
+        user = self.user.get_user()
+        if user and user.profile == 2:
+            ResumeManager(user_id=user.id).update_position(position=position)
+            DialogResumeManager(user_id=user.id).clean()
+            DialogResumeManager(user_id=user.id).create()
+            text = self.text.name()
             self.send_message(text=text)
 
     def wage(self, text):
@@ -183,17 +278,41 @@ class Menu:
             text = self.text.wage()
             self.send_message(text=text)
 
-    def city(self, text):
+    def age(self, text):
         user = self.user.get_user()
         if user:
+            ResumeManager(user_id=user.id).update_name(name=text)
+            DialogResumeManager(user_id=user.id).age()
+            text = self.text.age()
+            self.send_message(text=text)
+
+    def city(self, text):
+        user = self.user.get_user()
+        if user and user.profile == 1:
             JobManager(user_id=user.id).update_city(city=text)
             DialogJobManager(user_id=user.id).city()
             text = self.text.city()
             self.send_message(text=text)
 
-    def experience(self, text):
+    def lang(self, text):
         user = self.user.get_user()
         if user:
+            ResumeManager(user_id=user.id).update_lang(lang=text)
+            DialogResumeManager(user_id=user.id).lang()
+            text = self.text.lang()
+            self.send_message(text=text)
+
+    def education(self, text):
+        user = self.user.get_user()
+        if user:
+            ResumeManager(user_id=user.id).update_education(education=text)
+            DialogResumeManager(user_id=user.id).education()
+            text = self.text.education()
+            self.send_message(text=text)
+
+    def experience(self, text):
+        user = self.user.get_user()
+        if user and user.profile == 1:
             JobManager(user_id=user.id).update_experience(experience=text)
             DialogJobManager(user_id=user.id).experience()
             text = self.text.experience()
