@@ -61,6 +61,9 @@ class Menu:
             self.moderation()
 
     def moderation(self):
+        user = self.user.get_user()
+        if user:
+            DialogJobManager(user_id=user.id).clean()
         text = self.text.moderation()
         self.send_message(text=text)
 

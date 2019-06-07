@@ -51,40 +51,47 @@ class DialogJobManager:
     def check_looking_for(self):
         job = JobDialog.objects.filter(
             user_id=self.user_id).order_by('-created').first()
-        if job.looking_for:
-            return True
+        if not job:
+            return False
+        else:
+            return job.looking_for
 
     def check_wage(self):
         job = JobDialog.objects.filter(
             user_id=self.user_id).order_by('-created').first()
-
-        if job.wage:
-            return True
+        if not job:
+            return False
+        else:
+            return job.wage
 
     def check_city(self):
         job = JobDialog.objects.filter(
             user_id=self.user_id).order_by('-created').first()
-
-        if job.city:
-            return True
+        if not job:
+            return False
+        else:
+            return job.city
 
     def check_experience(self):
         job = JobDialog.objects.filter(
             user_id=self.user_id).order_by('-created').first()
-
-        if job.experience:
-            return True
+        if not job:
+            return False
+        else:
+            return job.experience
 
     def check_description(self):
         job = JobDialog.objects.filter(
             user_id=self.user_id).order_by('-created').first()
-
-        if job.description:
-            return True
+        if not job:
+            return False
+        else:
+            return job.description
 
     def check_write_to_employer(self):
         job = JobDialog.objects.filter(
             user_id=self.user_id).order_by('-created').first()
-
-        if job.write_to_employer:
-            return True
+        if not job:
+            return False
+        else:
+            return job.write_to_employer
