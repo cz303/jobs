@@ -39,6 +39,8 @@ class Menu:
             self.start_menu()
         elif text == 'Как мы работаем?':
             self.how_we_are_working()
+        elif text == 'Мои резюме':
+            self.my_resume()
         elif text == 'Создать вакансию' or \
                 text == 'Создать резюме' or \
                 text == '◀️ Назад':
@@ -76,6 +78,19 @@ class Menu:
             self.where_to_find_username_link()
         elif self.check_write_to_employer():
             self.moderation()
+
+    def my_resume(self):
+        user = self.user.get_user()
+        if user and user.profile == 2:
+            resumes = ResumeManager(user_id=user.id).get_resume()
+            if resumes:
+                text = self.text.my_resume()
+                markup = self.markup.my_resume(resumes=resumes)
+                if text and markup:
+                    self.send_message(text=text, reply_markup=markup)
+                else:
+                    text = self.text.my_resume_on_moderation()
+                    self.send_message(text=text)
 
     def work_city(self, text):
         user = self.user.get_user()

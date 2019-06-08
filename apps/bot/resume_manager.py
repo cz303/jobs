@@ -58,3 +58,9 @@ class ResumeManager:
             user_id=self.user_id).order_by('-created').first()
         resume.description = description
         resume.save()
+
+    def get_resume(self):
+        resume = Resume.objects.filter(
+            user_id=self.user_id
+        ).order_by('-created')
+        return resume

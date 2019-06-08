@@ -18,13 +18,21 @@ class Markup:
 
         self.inline = InlineKeyboardMarkup()
 
-    def send(self, texts: list, inline=None):
+    def send(self, texts: list, callback_data=None, inline=None):
+        if isinstance(callback_data, list):
+            for text in texts:
+                for call in callback_data:
+                    self.inline.add(InlineKeyboardButton(
+                        text=text,
+                        callback_data=call))
+            return self.inline
+
         if inline:
             for text in texts:
                 if text == 'Отправить!':
                     self.inline.add(InlineKeyboardButton(
                         text=text,
-                        callback_data=text,
+                        callback_data=callback_data or text,
                         url='https://t.me/share/url?url=https%3A//telegram'
                             '.me/RS_Work_bot'))
                     return self.inline
@@ -114,3 +122,19 @@ class Markup:
     def write_to_employer(self):
         texts = ['Где искать username?']
         return self.send(texts=texts, inline=True)
+
+    def my_resume(self, resumes):
+        resume_text = []
+        callback_data = []
+        for resume in resumes:
+            if resume.moderation == 2:
+                if resume.is_active:
+                    resume_text.append(f"{resume.position[:22]}...")
+                    callback_data.append(f'{resume.is_active}:{resume.id}')
+                else:
+                    # add icon update
+                    resume_text.append(f"🔄  {resume.position[:22]}...")
+                    callback_data.append(str(resume.id))
+
+                return self.send(texts=resume_text,
+                                 callback_data=callback_data, inline=True)

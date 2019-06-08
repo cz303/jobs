@@ -223,3 +223,15 @@ class Text:
                     'готовый текст.<a href="https://' \
                     'telegra.ph/file/8e149b7bf8849955c3212.jpg">&#160;</a>'
         return self.text
+
+    def my_resume(self):
+        self.text = "<b>Мои резюме!</b>\nНе забывай что вакансия " \
+                    "активна 7 дней после чего ее нужно обновить." \
+                    "​<a href='https://" \
+                    "telegra.ph/file/301ec535e75c4d69d6f31.jpg'>&#160;</a>"
+        return self.text
+
+    def my_resume_on_moderation(self):
+        self.text = "У вас ещё нет резюме. Чтобы создать резюме" \
+                    " нажмите кнопку - <b>'Создать резюме'</b>."
+        return self.text
