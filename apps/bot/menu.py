@@ -41,6 +41,8 @@ class Menu:
             self.how_we_are_working()
         elif text == 'Мои резюме':
             self.my_resume()
+        elif text == 'Мои вакансии':
+            self.my_vacations()
         elif text == 'Создать вакансию' or \
                 text == 'Создать резюме' or \
                 text == '◀️ Назад':
@@ -78,6 +80,19 @@ class Menu:
             self.where_to_find_username_link()
         elif self.check_write_to_employer():
             self.moderation()
+
+    def my_vacations(self):
+        user = self.user.get_user()
+        if user and user.profile == 1:
+            vacations = JobManager(user_id=user.id).get_vacations()
+            if vacations:
+                text = ''
+                markup = ''
+                if text and markup:
+                    self.send_message(text=text, reply_markup=markup)
+                else:
+                    text = ''
+                    self.send_message(text=text)
 
     def my_resume(self):
         user = self.user.get_user()

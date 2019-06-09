@@ -46,3 +46,9 @@ class JobManager:
             user_id=self.user_id).order_by('-created').first()
         job.write_to_employer = write_to_employer
         job.save()
+
+    def get_vacations(self):
+        job = Job.objects.filter(
+            user_id=self.user_id
+        ).order_by('-created')
+        return job
