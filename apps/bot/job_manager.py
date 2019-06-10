@@ -11,10 +11,19 @@ class JobManager:
         Job.objects.create(
             user_id=self.user_id, category=category)
 
+    def clean(self):
+        Job.objects.filter(user_id=self.user_id, position=None).delete()
+
     def update_position(self, position):
         job = Job.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).first()
         job.position = position
+        job.save()
+
+    def update_looking_for(self, looking_for):
+        job = Job.objects.filter(
+            user_id=self.user_id).first()
+        job.looking_for = looking_for
         job.save()
 
     def update_wage(self, wage):

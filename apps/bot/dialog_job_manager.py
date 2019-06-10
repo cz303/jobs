@@ -8,7 +8,26 @@ class DialogJobManager:
         self.user_id = user_id
 
     def create(self):
-        JobDialog.objects.create(user_id=self.user_id, looking_for=True)
+        JobDialog.objects.create(user_id=self.user_id, create_job=True)
+
+    def update_category(self):
+        job = JobDialog.objects.filter(user_id=self.user_id).first()
+        job.create_job = False
+        job.category = True
+        job.save()
+
+    def update_position(self):
+        job = JobDialog.objects.filter(user_id=self.user_id).first()
+        job.category = False
+        job.position = True
+        job.save()
+
+    def looking_for(self):
+        job = JobDialog.objects.filter(
+            user_id=self.user_id).first()
+        job.looking_for = False
+        job.wage = True
+        job.save()
 
     def wage(self):
         job = JobDialog.objects.filter(

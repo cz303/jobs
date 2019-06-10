@@ -47,6 +47,7 @@ class Menu:
                 text == 'Создать резюме' or \
                 text == '◀️ Назад':
             self.send_categories()
+
         elif text in self.markup.categories:
             self.send_sub_category(category=text)
         elif text in self.markup.get_sub_categories:
@@ -264,6 +265,16 @@ class Menu:
         self.send_message(text=text)
 
     def send_categories(self):
+        user = self.user.get_user()
+        if user:
+            if user.profile == 1:
+                JobManager(user_id=user.id).clean()
+                DialogJobManager(user_id=user.id).clean()
+                DialogJobManager(user_id=user.id).create()
+            else:
+                DialogResumeManager(user_id=user.id).clean()
+                DialogResumeManager(user_id=user.id).create()
+
         text = self.text.send_categories()
         reply_markup = self.markup.send_categories()
         try:
@@ -286,7 +297,6 @@ class Menu:
         user = self.user.get_user()
         if user and user.profile == 1:
             JobManager(user_id=user.id).update_position(position=position)
-            DialogJobManager(user_id=user.id).clean()
             DialogJobManager(user_id=user.id).create()
             text = self.text.looking_for()
             self.send_message(text=text)
@@ -295,7 +305,6 @@ class Menu:
         user = self.user.get_user()
         if user and user.profile == 2:
             ResumeManager(user_id=user.id).update_position(position=position)
-            DialogResumeManager(user_id=user.id).clean()
             DialogResumeManager(user_id=user.id).create()
             text = self.text.name()
             self.send_message(text=text)

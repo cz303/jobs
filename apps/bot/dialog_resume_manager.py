@@ -8,7 +8,19 @@ class DialogResumeManager:
         self.user_id = user_id
 
     def create(self):
-        ResumeDialog.objects.create(user_id=self.user_id, name=True)
+        ResumeDialog.objects.create(user_id=self.user_id, create_job=True)
+
+    def update_category(self):
+        job = ResumeDialog.objects.filter(user_id=self.user_id).first()
+        job.create_job = False
+        job.category = True
+        job.save()
+
+    def update_position(self):
+        job = ResumeDialog.objects.filter(user_id=self.user_id).first()
+        job.category = False
+        job.position = True
+        job.save()
 
     def age(self):
         resume = ResumeDialog.objects.filter(

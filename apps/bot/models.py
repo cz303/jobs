@@ -127,6 +127,8 @@ class IDialog(ICommonInfo):
     remote = models.BooleanField(default=False)
     experience = models.BooleanField(default=False)
     description = models.BooleanField(default=False)
+    category = models.BooleanField(default=False)
+    position = models.BooleanField(default=False)
 
 
 class JobDialog(IDialog):
@@ -136,12 +138,14 @@ class JobDialog(IDialog):
     looking_for = models.BooleanField(default=False)
     wage = models.BooleanField(default=False)
     write_to_employer = models.BooleanField(default=False)
+    create_job = models.BooleanField(default=False)
 
 
 class ResumeDialog(IDialog):
     class Meta:
         db_table = 'resumedialog'
 
+    create_resume = models.BooleanField(default=False)
     name = models.BooleanField(default=False)
     age = models.BooleanField(default=False)
     lang = models.BooleanField(default=False)
