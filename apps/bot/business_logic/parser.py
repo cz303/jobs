@@ -1,4 +1,4 @@
-from bot.serialization import (
+from bot.models.serialization import (
     MessageSchema,
     CallbackQuerySchema,
     EditDataCallbackQuery

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (
+from bot.models.tables import (
     User,
     City,
     Resume,

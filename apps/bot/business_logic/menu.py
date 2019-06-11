@@ -1,13 +1,13 @@
 import time
-from bot.parser import Parser
-from bot.text import Text
-from bot.markup import Markup
+from bot.business_logic.parser import Parser
+from bot.business_logic.text import Text
+from bot.business_logic.markup import Markup
 from telebot.apihelper import ApiException
-from .user_manager import UserManager
-from .job_manager import JobManager
-from .resume_manager import ResumeManager
-from .dialog_job_manager import DialogJobManager
-from .dialog_resume_manager import DialogResumeManager
+from bot.models.user_manager import UserManager
+from bot.models.job_manager import JobManager
+from bot.models.resume_manager import ResumeManager
+from bot.models.dialog_job_manager import DialogJobManager
+from bot.models.dialog_resume_manager import DialogResumeManager
 
 __all__ = ('Menu',)
 
@@ -25,62 +25,81 @@ class Menu:
         self.username = self.parser.username()
         self.user = UserManager(user_id=self.user_id, username=self.username)
 
+    @property
+    def command_maps(self):
+        return {
+            '/start': self.start_menu,
+            '🏬 Работодатель': self.employer,
+            '👨‍💻 Работник': self.worker,
+            '📬 Рассказать друзьям': self.tell_friends,
+            '🏬 Изменить аккаунт': self.start_menu,
+            'Как мы работаем?': self.how_we_are_working,
+            'Мои резюме': self.my_resume,
+            'Мои вакансии': self.my_vacations,
+            'Создать вакансию': self.send_categories,
+            'Создать резюме': self.send_categories,
+            '◀️ Назад': self.send_categories,
+        }
+
     def send(self):
         text = self.parser.text()
-        if text == '/start':
-            self.start_menu()
-        elif text == '🏬 Работодатель':
-            self.employer()
-        elif text == '👨‍💻 Работник':
-            self.worker()
-        elif text == '📬 Рассказать друзьям':
-            self.tell_friends()
-        elif text == '🏬 Изменить аккаунт':
-            self.start_menu()
-        elif text == 'Как мы работаем?':
-            self.how_we_are_working()
-        elif text == 'Мои резюме':
-            self.my_resume()
-        elif text == 'Мои вакансии':
-            self.my_vacations()
-        elif text == 'Создать вакансию' or \
-                text == 'Создать резюме' or \
-                text == '◀️ Назад':
-            self.send_categories()
+        user = self.user.get_user()
 
-        elif text in self.markup.categories:
-            self.send_sub_category(category=text)
-        elif text in self.markup.get_sub_categories:
-            if not self.looking_for(position=text):
-                self.name(position=text)
+        if not user:
+            return self.start_menu()
+
+        command = self.command_maps.get(text, None)
+
+        if command:
+            try:
+                return command()
+            except TypeError:
+                return command(user=user)
+
+        if text in self.markup.categories:
+            self.send_sub_category(category=text, user=user)
+
+        # TODO: create job
+
+        elif text in self.markup.get_sub_categories and user.profile == 1:
+            self.looking_for(position=text, user=user)
+
+        # TODO: First step
+
         elif self.check_looking_for():
-            self.wage(text=text)
-        elif self.check_name():
-            self.age(text=text)
-        elif self.check_wage():
-            self.city(text=text)
-        elif self.check_age():
-            self.work_city(text=text)
-        elif self.check_city():
-            self.experience(text=text)
-        elif self.check_work_city():
-            self.lang(text=text)
-        elif self.check_lang():
-            self.work_experience(text=text)
-        elif self.check_work_experience():
-            self.education(text=text)
-        elif self.check_education():
-            self.work_description(text=text)
-        elif self.check_work_description():
-            self.work_moderation()
-        elif self.check_experience():
-            self.description(text=text)
-        elif self.check_description():
-            self.write_to_employer(text=text)
-        elif text == 'Где искать username?':
-            self.where_to_find_username_link()
-        elif self.check_write_to_employer():
-            self.moderation()
+            self.wage(text=text, user=user)
+
+        # TODO: create resume
+
+        # elif text in self.markup.get_sub_categories and user.profile == 2:
+        #     self.name(position=text, user=user)
+
+        # elif self.check_name():
+        #     self.age(text=text)
+        # elif self.check_wage():
+        #     self.city(text=text)
+        # elif self.check_age():
+        #     self.work_city(text=text)
+        # elif self.check_city():
+        #     self.experience(text=text)
+        # elif self.check_work_city():
+        #     self.lang(text=text)
+        # elif self.check_lang():
+        #     self.work_experience(text=text)
+        # elif self.check_work_experience():
+        #     self.education(text=text)
+        # elif self.check_education():
+        #     self.work_description(text=text)
+        # elif self.check_work_description():
+        #     self.work_moderation()
+        # elif self.check_experience():
+        #     self.description(text=text)
+        # elif self.check_description():
+        #     self.write_to_employer(text=text)
+        # elif text == 'Где искать username?':
+        #     self.where_to_find_username_link()
+        # elif self.check_write_to_employer():
+        #     self.moderation()
 
     def my_vacations(self):
         user = self.user.get_user()
@@ -102,11 +121,11 @@ class Menu:
             if resumes:
                 text = self.text.my_resume()
                 markup = self.markup.my_resume(resumes=resumes)
-                if text and markup:
-                    self.send_message(text=text, reply_markup=markup)
-                else:
-                    text = self.text.my_resume_on_moderation()
-                    self.send_message(text=text)
+                # if text and markup:
+                self.send_message(text=text, reply_markup=markup)
+            else:
+                text = self.text.my_resume_on_moderation()
+                self.send_message(text=text)
 
     def work_city(self, text):
         user = self.user.get_user()
@@ -264,58 +283,56 @@ class Menu:
         text = self.text.how_we_are_working(profile=user.profile)
         self.send_message(text=text)
 
-    def send_categories(self):
-        user = self.user.get_user()
-        if user:
-            if user.profile == 1:
-                JobManager(user_id=user.id).clean()
-                DialogJobManager(user_id=user.id).clean()
-                DialogJobManager(user_id=user.id).create()
-            else:
-                DialogResumeManager(user_id=user.id).clean()
-                DialogResumeManager(user_id=user.id).create()
+    def send_categories(self, user):
+        if user.profile == 1:
+            JobManager(user_id=user.id).clean()
+            dialog = DialogJobManager(user_id=user.id)
+            dialog.clean()
+            dialog.create()
+        else:
+            ResumeManager(user_id=user.id).clean()
+            dialog = DialogResumeManager(user_id=user.id)
+            dialog.clean()
+            dialog.create()
 
         text = self.text.send_categories()
         reply_markup = self.markup.send_categories()
+
         try:
             self.edit_message_text(text=text, reply_markup=reply_markup)
         except ApiException:
             self.send_message(text=text, reply_markup=reply_markup)
 
-    def send_sub_category(self, category):
-        user = self.user.get_user()
-        if user:
-            if user.profile == 1:
-                JobManager(user_id=user.id).create(category=category)
-            else:
-                ResumeManager(user_id=user.id).create(category=category)
-            text = self.text.send_sub_category()
-            reply_markup = self.markup.send_sub_category(category)
-            self.edit_message_text(text=text, reply_markup=reply_markup)
+    def send_sub_category(self, category, user):
+        if user.profile == 1:
+            JobManager(user_id=user.id).create(category=category)
+            DialogJobManager(user_id=user.id).update_category()
+        else:
+            ResumeManager(user_id=user.id).create(category=category)
+            DialogResumeManager(user_id=user.id).update_category()
 
-    def looking_for(self, position):
-        user = self.user.get_user()
-        if user and user.profile == 1:
-            JobManager(user_id=user.id).update_position(position=position)
-            DialogJobManager(user_id=user.id).create()
-            text = self.text.looking_for()
-            self.send_message(text=text)
+        text = self.text.send_sub_category()
+        reply_markup = self.markup.send_sub_category(category)
 
-    def name(self, position):
-        user = self.user.get_user()
-        if user and user.profile == 2:
-            ResumeManager(user_id=user.id).update_position(position=position)
-            DialogResumeManager(user_id=user.id).create()
-            text = self.text.name()
-            self.send_message(text=text)
+        self.edit_message_text(text=text, reply_markup=reply_markup)
 
-    def wage(self, text):
-        user = self.user.get_user()
-        if user:
-            JobManager(user_id=user.id).update_wage(wage=text)
-            DialogJobManager(user_id=user.id).wage()
-            text = self.text.wage()
-            self.send_message(text=text)
+    def looking_for(self, position, user):
+        JobManager(user_id=user.id).update_position(position=position)
+        DialogJobManager(user_id=user.id).looking_for()
+        text = self.text.looking_for()
+        self.send_message(text=text)
+
+    def name(self, position, user):
+        ResumeManager(user_id=user.id).update_position(position=position)
+        DialogResumeManager(user_id=user.id).name()
+        text = self.text.name()
+        self.send_message(text=text)
+
+    def wage(self, text, user):
+        JobManager(user_id=user.id).update_looking_for(looking_for=text)
+        DialogJobManager(user_id=user.id).wage()
+        text = self.text.wage()
+        self.send_message(text=text)
 
     def age(self, text):
         user = self.user.get_user()

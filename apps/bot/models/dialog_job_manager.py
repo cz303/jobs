@@ -1,4 +1,4 @@
-from .models import JobDialog
+from bot.models.tables import JobDialog
 
 __all__ = ('DialogJobManager',)
 
@@ -25,20 +25,20 @@ class DialogJobManager:
     def looking_for(self):
         job = JobDialog.objects.filter(
             user_id=self.user_id).first()
-        job.looking_for = False
-        job.wage = True
+        job.position = False
+        job.looking_for = True
         job.save()
 
     def wage(self):
         job = JobDialog.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).first()
         job.looking_for = False
         job.wage = True
         job.save()
 
     def city(self):
         job = JobDialog.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).first()
         job.wage = False
         job.city = True
         job.save()

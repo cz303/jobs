@@ -1,4 +1,4 @@
-from .models import ResumeDialog
+from bot.models.tables import ResumeDialog
 
 __all__ = ('DialogResumeManager',)
 
@@ -8,11 +8,11 @@ class DialogResumeManager:
         self.user_id = user_id
 
     def create(self):
-        ResumeDialog.objects.create(user_id=self.user_id, create_job=True)
+        ResumeDialog.objects.create(user_id=self.user_id, create_resume=True)
 
     def update_category(self):
         job = ResumeDialog.objects.filter(user_id=self.user_id).first()
-        job.create_job = False
+        job.create_resume = False
         job.category = True
         job.save()
 
@@ -22,16 +22,23 @@ class DialogResumeManager:
         job.position = True
         job.save()
 
+    def name(self):
+        resume = ResumeDialog.objects.filter(
+            user_id=self.user_id).first()
+        resume.position = False
+        resume.name = True
+        resume.save()
+
     def age(self):
         resume = ResumeDialog.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).first()
         resume.name = False
         resume.age = True
         resume.save()
 
     def city(self):
         resume = ResumeDialog.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).first()
         resume.age = False
         resume.city = True
         resume.save()

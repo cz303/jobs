@@ -1,7 +1,9 @@
 from django.db import models
+from time import time
 
 
 class User(models.Model):
+    time = time()
     PROFILE = (
         (1, 'Работодатель'),
         (2, 'Работник')
@@ -18,7 +20,8 @@ class User(models.Model):
     username = models.CharField(max_length=255, null=True)
     credit = models.CharField(max_length=255, default=0.00)
     profile = models.SmallIntegerField(choices=PROFILE)
-    created = models.DateField(auto_now=True, editable=False)
+    created = models.DateTimeField(auto_now=True, editable=False)
+    timestamp = models.IntegerField(default=time)
 
     def __str__(self):
         return self.username
@@ -38,7 +41,8 @@ class ICommonInfo(models.Model):
 
     id = models.AutoField(primary_key=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=-1)
-    created = models.DateField(auto_now=True, editable=False)
+    created = models.DateTimeField(auto_now=True, editable=False)
+    timestamp = models.IntegerField(default=time)
 
 
 class CommonInfo(ICommonInfo):

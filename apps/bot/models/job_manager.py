@@ -1,4 +1,4 @@
-from .models import Job
+from bot.models.tables import Job
 
 __all__ = ('JobManager',)
 
@@ -16,48 +16,47 @@ class JobManager:
 
     def update_position(self, position):
         job = Job.objects.filter(
-            user_id=self.user_id).first()
+            user_id=self.user_id).order_by('timestamp').reverse().first()
         job.position = position
         job.save()
 
     def update_looking_for(self, looking_for):
         job = Job.objects.filter(
-            user_id=self.user_id).first()
+            user_id=self.user_id).order_by('timestamp').reverse().first()
         job.looking_for = looking_for
         job.save()
 
     def update_wage(self, wage):
         job = Job.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).order_by('timestamp').reverse().first()
         job.wage = wage
         job.save()
 
     def update_city(self, city):
         job = Job.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).order_by('timestamp').reverse().first()
         job.city = city
         job.save()
 
     def update_experience(self, experience):
         job = Job.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).order_by('timestamp').reverse().first()
         job.experience = experience
         job.save()
 
     def update_description(self, description):
         job = Job.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).order_by('timestamp').reverse().first()
         job.description = description
         job.save()
 
     def update_write_to_employer(self, write_to_employer):
         job = Job.objects.filter(
-            user_id=self.user_id).order_by('-created').first()
+            user_id=self.user_id).order_by('timestamp').reverse().first()
         job.write_to_employer = write_to_employer
         job.save()
 
     def get_vacations(self):
         job = Job.objects.filter(
-            user_id=self.user_id
-        ).order_by('-created')
+            user_id=self.user_id).order_by('timestamp')
         return job

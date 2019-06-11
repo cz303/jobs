@@ -1,7 +1,7 @@
-from .models import User
+from bot.models.tables import User
 from django.db.utils import IntegrityError
 
-__all__ = ['UserManager']
+__all__ = ('UserManager',)
 
 
 class UserManager:

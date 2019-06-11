@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.views import View
-from bot.set_web_hook import SetWebHook
-from bot.menu import Menu
+from bot.models.set_web_hook import SetWebHook
+from bot.business_logic.menu import Menu
 
 set_web_hook = SetWebHook()
 
