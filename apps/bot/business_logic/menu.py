@@ -159,8 +159,11 @@ class Menu:
             if resumes:
                 text = self.text.my_resume()
                 markup = self.markup.my_resume(resumes=resumes)
-                # if text and markup:
-                self.send_message(text=text, reply_markup=markup)
+                if text and markup:
+                    self.send_message(text=text, reply_markup=markup)
+                else:
+                    text = self.text.my_resume_on_moderation()
+                    self.send_message(text=text)
             else:
                 text = self.text.my_resume_on_moderation()
                 self.send_message(text=text)
