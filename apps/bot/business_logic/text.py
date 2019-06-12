@@ -261,3 +261,17 @@ class Text:
                         f"//telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
                         f"&#160;</a>",
         return self.text
+
+    def view_resume(self, resume):
+        self.text = f'<b>Имя: </b>{resume.name}\n\n' \
+                    f'<b>Возвраст:</b> {resume.age}\n\n' \
+                    f'<b>Желаемый город работы:</b>' \
+                    f' {resume.city if resume.city else "Отдаленная работа"}' \
+                    f'\n\n<b>Языки:</b> {resume.lang}\n\n' \
+                    f'<b>Опыт работы:</b> {resume.experience}\n\n' \
+                    f'<b>Образование: </b> {resume.education}\n\n'\
+                    f'<b>О себе:</b> {resume.description}' \
+                    f"<a href='https://" \
+                    f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
+                    f"&#160;</a>"
+        return self.text

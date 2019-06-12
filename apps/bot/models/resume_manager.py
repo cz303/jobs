@@ -70,3 +70,11 @@ class ResumeManager:
     def get_resume_for_id(self, resume_id):
         resume = Resume.objects.get(id=resume_id)
         return resume
+
+    def update_resume(self, resume_id):
+        resume = Resume.objects.get(id=resume_id)
+        resume.is_active = True
+        resume.save()
+
+    def delete_resume(self, resume_id):
+        Resume.objects.get(id=resume_id).delete()

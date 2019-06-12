@@ -35,6 +35,7 @@ class Menu:
             '🏬 Изменить аккаунт': self.start_menu,
             'Как мы работаем?': self.how_we_are_working,
             'Мои резюме': self.my_resume,
+            'r:return': self.my_resume,
             'v:return': self.my_vacations,
             'Мои вакансии': self.my_vacations,
             'Создать вакансию': self.send_categories,
@@ -145,10 +146,47 @@ class Menu:
         if 'vacations' in text:
             self.view_vacations(user=user, text=text)
 
-        elif 'update' in text:
+        elif 'v:update' in text:
             self.update_vacations(user=user, text=text)
 
+        elif 'v:del' in text:
+            self.delete_vacations(user=user, text=text)
+
+        # TODO: Update or delete resumes
+
+        if 'resumes' in text:
+            self.view_resume(user=user, text=text)
+
+        elif 'r:update' in text:
+            self.update_resume(user=user, text=text)
+
+        elif 'r:del' in text:
+            self.delete_resume(user=user, text=text)
+
         # TODO: Search resume
+
+    def delete_resume(self, user, text):
+        resume_id = text.split(':')[-1]
+        ResumeManager(user_id=user.id).delete_resume(resume_id=resume_id)
+        self.my_resume(user=user)
+
+    def update_resume(self, user, text):
+        resume_id = text.split(':')[-1]
+        ResumeManager(user_id=user.id).update_resume(resume_id=resume_id)
+        self.view_resume(user=user, text=text)
+
+    def view_resume(self, user, text):
+        resume_id = text.split(':')[-1]
+        resume = ResumeManager(
+            user_id=user.id).get_resume_for_id(resume_id=resume_id)
+        text = self.text.view_resume(resume=resume)
+        markup = self.markup.view_resume(resume=resume)
+        self.edit_message_text(text=text, reply_markup=markup)
+
+    def delete_vacations(self, user, text):
+        vacation_id = text.split(':')[-1]
+        JobManager(user_id=user.id).delete_vacations(vacation_id=vacation_id)
+        self.my_vacations(user=user)
 
     def update_vacations(self, user, text):
         vacation_id = text.split(':')[-1]
@@ -170,7 +208,7 @@ class Menu:
             text = self.text.my_vacations()
             markup = self.markup.my_vacations(vacations=vacations)
 
-            if text and markup:
+            if text and markup.keyboard:
                 self.send_message(text=text, reply_markup=markup)
             else:
                 text = self.text.my_vacation_on_moderation()
@@ -185,7 +223,7 @@ class Menu:
             text = self.text.my_resume()
             markup = self.markup.my_resume(resumes=resumes)
 
-            if text and markup:
+            if text and markup.keyboard:
                 self.send_message(text=text, reply_markup=markup)
             else:
                 text = self.text.my_resume_on_moderation()

@@ -69,3 +69,6 @@ class JobManager:
         job = Job.objects.get(id=vacation_id)
         job.is_active = True
         job.save()
+
+    def delete_vacations(self, vacation_id):
+        Job.objects.get(id=vacation_id).delete()

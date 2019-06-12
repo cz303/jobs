@@ -153,10 +153,20 @@ class Markup:
 
     def view_vacations(self, vacancy):
         if not vacancy.is_active:
-            item = ('🔄 Обновить', f'update:{vacancy.id}')
+            item = ('🔄 Обновить', f'v:update:{vacancy.id}')
         else:
-            item = ('Удалить', f'delete:{vacancy.id}')
+            item = ('Удалить', f'v:del:{vacancy.id}')
 
         data = [('◀️ Назад', 'v:return'), item]
+
+        return self.send(callback_data=data, inline=True)
+
+    def view_resume(self, resume):
+        if not resume.is_active:
+            item = ('🔄 Обновить', f'r:update:{resume.id}')
+        else:
+            item = ('Удалить', f'r:del:{resume.id}')
+
+        data = [('◀️ Назад', 'r:return'), item]
 
         return self.send(callback_data=data, inline=True)
