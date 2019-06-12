@@ -139,34 +139,36 @@ class Menu:
             elif self.check_work_description(user=user):
                 self.work_moderation(text=text, user=user)
 
-    def my_vacations(self):
-        user = self.user.get_user()
-        if user and user.profile == 1:
-            vacations = JobManager(user_id=user.id).get_vacations()
-            if vacations:
-                text = ''
-                markup = ''
-                if text and markup:
-                    self.send_message(text=text, reply_markup=markup)
-                else:
-                    text = ''
-                    self.send_message(text=text)
+    def my_vacations(self, user):
+        vacations = JobManager(user_id=user.id).get_vacations()
 
-    def my_resume(self):
-        user = self.user.get_user()
-        if user and user.profile == 2:
-            resumes = ResumeManager(user_id=user.id).get_resume()
-            if resumes:
-                text = self.text.my_resume()
-                markup = self.markup.my_resume(resumes=resumes)
-                if text and markup:
-                    self.send_message(text=text, reply_markup=markup)
-                else:
-                    text = self.text.my_resume_on_moderation()
-                    self.send_message(text=text)
+        if vacations:
+            text = self.text.my_resume()
+            markup = self.markup.my_vacations(vacations=vacations)
+
+            if text and markup:
+                self.send_message(text=text, reply_markup=markup)
+            else:
+                text = self.text.my_vacation_on_moderation()
+                self.send_message(text=text)
+        else:
+            text = self.text.my_vacation_on_moderation()
+            self.send_message(text=text)
+
+    def my_resume(self, user):
+        resumes = ResumeManager(user_id=user.id).get_resume()
+        if resumes:
+            text = self.text.my_resume()
+            markup = self.markup.my_resume(resumes=resumes)
+
+            if text and markup:
+                self.send_message(text=text, reply_markup=markup)
             else:
                 text = self.text.my_resume_on_moderation()
                 self.send_message(text=text)
+        else:
+            text = self.text.my_resume_on_moderation()
+            self.send_message(text=text)
 
     def work_city(self, text, user):
         ResumeManager(user_id=user.id).update_age(age=text)

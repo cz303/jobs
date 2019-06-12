@@ -18,13 +18,10 @@ class Markup:
 
         self.inline = InlineKeyboardMarkup()
 
-    def send(self, texts: list, callback_data=None, inline=None):
+    def send(self, texts=None, callback_data=None, inline=None):
         if isinstance(callback_data, list):
-            for text in texts:
-                for call in callback_data:
-                    self.inline.add(InlineKeyboardButton(
-                        text=text,
-                        callback_data=call))
+            for k, v in callback_data:
+                self.inline.add(InlineKeyboardButton(text=k, callback_data=v))
             return self.inline
 
         if inline:
@@ -124,17 +121,29 @@ class Markup:
         return self.send(texts=texts, inline=True)
 
     def my_resume(self, resumes):
-        resume_text = []
-        callback_data = []
+        data = []
         for resume in resumes:
             if resume.moderation == 2:
                 if resume.is_active:
-                    resume_text.append(f"{resume.position[:22]}...")
-                    callback_data.append(f'{resume.is_active}:{resume.id}')
+                    data.append((f"{resume.position[:22]}...",
+                                 f"{resume.is_active}:{resume.id}"))
                 else:
                     # add icon update
-                    resume_text.append(f"🔄  {resume.position[:22]}...")
-                    callback_data.append(str(resume.id))
+                    data.append((f"🔄  {resume.position[:22]}...",
+                                 f"{resume.id}"))
 
-                return self.send(texts=resume_text,
-                                 callback_data=callback_data, inline=True)
+        return self.send(callback_data=data, inline=True)
+
+    def my_vacations(self, vacations):
+        data = []
+        for vacation in vacations:
+            if vacation.moderation == 2:
+                if vacation.is_active:
+                    data.append((f"{vacation.position[:22]}...",
+                                 f"{vacation.is_active}:{vacation.id}"))
+                else:
+                    # add icon update
+                    data.append((f"🔄  {vacation.position[:22]}...",
+                                 f"{vacation.id}"))
+
+        return self.send(callback_data=data, inline=True)

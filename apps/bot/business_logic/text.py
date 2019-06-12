@@ -235,3 +235,8 @@ class Text:
         self.text = "У вас ещё нет резюме. Чтобы создать резюме" \
                     " нажмите кнопку - <b>'Создать резюме'</b>."
         return self.text
+
+    def my_vacation_on_moderation(self):
+        self.text = "У вас ещё нет вакансий. Чтобы создать вакансию" \
+                    " нажмите кнопку - <b>'Создать вакансию'</b>."
+        return self.text
