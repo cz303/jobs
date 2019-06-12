@@ -125,12 +125,13 @@ class Markup:
         for resume in resumes:
             if resume.moderation == 2:
                 if resume.is_active:
-                    data.append((f"{resume.position[:22]}...",
-                                 f"{resume.is_active}:{resume.id}"))
+                    data.append(
+                        (f"{resume.position[:22]}...",
+                         f"resumes:{resume.is_active}:{resume.id}"))
                 else:
                     # add icon update
                     data.append((f"🔄  {resume.position[:22]}...",
-                                 f"{resume.id}"))
+                                 f"resumes:{resume.id}"))
 
         return self.send(callback_data=data, inline=True)
 
@@ -139,11 +140,23 @@ class Markup:
         for vacation in vacations:
             if vacation.moderation == 2:
                 if vacation.is_active:
-                    data.append((f"{vacation.position[:22]}...",
-                                 f"{vacation.is_active}:{vacation.id}"))
+                    data.append(
+                        (f"{vacation.position[:22]}...",
+                         f"vacations:{vacation.is_active}:{vacation.id}"))
                 else:
                     # add icon update
-                    data.append((f"🔄  {vacation.position[:22]}...",
-                                 f"{vacation.id}"))
+                    data.append(
+                        (f"🔄  {vacation.position[:22]}...",
+                         f"vacations:{vacation.id}"))
+
+        return self.send(callback_data=data, inline=True)
+
+    def view_vacations(self, vacancy):
+        if not vacancy.is_active:
+            item = ('🔄 Обновить', f'update:{vacancy.id}')
+        else:
+            item = ('Удалить', f'delete:{vacancy.id}')
+
+        data = [('◀️ Назад', 'v:return'), item]
 
         return self.send(callback_data=data, inline=True)

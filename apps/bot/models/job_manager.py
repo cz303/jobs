@@ -60,3 +60,12 @@ class JobManager:
         job = Job.objects.filter(
             user_id=self.user_id).order_by('timestamp')
         return job
+
+    def get_vacation_for_id(self, vacation_id):
+        job = Job.objects.get(id=vacation_id)
+        return job
+
+    def update_vacations(self, vacation_id):
+        job = Job.objects.get(id=vacation_id)
+        job.is_active = True
+        job.save()

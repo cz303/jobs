@@ -231,6 +231,13 @@ class Text:
                     "telegra.ph/file/301ec535e75c4d69d6f31.jpg'>&#160;</a>"
         return self.text
 
+    def my_vacations(self):
+        self.text = "<b>Мои вакансии!</b>\nНе забывай что вакансия " \
+                    "активна 7 дней после чего ее нужно обновить." \
+                    "​<a href='https://" \
+                    "telegra.ph/file/301ec535e75c4d69d6f31.jpg'>&#160;</a>"
+        return self.text
+
     def my_resume_on_moderation(self):
         self.text = "У вас ещё нет резюме. Чтобы создать резюме" \
                     " нажмите кнопку - <b>'Создать резюме'</b>."
@@ -239,4 +246,18 @@ class Text:
     def my_vacation_on_moderation(self):
         self.text = "У вас ещё нет вакансий. Чтобы создать вакансию" \
                     " нажмите кнопку - <b>'Создать вакансию'</b>."
+        return self.text
+
+    def view_vacations(self, vacancy):
+        self.text = f'<b>{vacancy.looking_for}</b>\n\n' \
+                        f'<b>Зарплата:</b> {vacancy.wage}\n\n' \
+                        f'<b>Город:</b> {vacancy.city}\n\n<b>' \
+                        f'Опыт работы: {vacancy.experience}</b>\n\n' \
+                        f'<b>Описание вакансии:</b>' \
+                        f' {vacancy.description}\n\n' \
+                        f'<b>Написать работодателю:</b>' \
+                        f' @{vacancy.write_to_employer}' \
+                        f"<a href='https:" \
+                        f"//telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
+                        f"&#160;</a>",
         return self.text

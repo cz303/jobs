@@ -35,6 +35,7 @@ class Menu:
             '🏬 Изменить аккаунт': self.start_menu,
             'Как мы работаем?': self.how_we_are_working,
             'Мои резюме': self.my_resume,
+            'v:return': self.my_vacations,
             'Мои вакансии': self.my_vacations,
             'Создать вакансию': self.send_categories,
             'Создать резюме': self.send_categories,
@@ -139,11 +140,34 @@ class Menu:
             elif self.check_work_description(user=user):
                 self.work_moderation(text=text, user=user)
 
+        # TODO: Update or delete vacations
+
+        if 'vacations' in text:
+            self.view_vacations(user=user, text=text)
+
+        elif 'update' in text:
+            self.update_vacations(user=user, text=text)
+
+        # TODO: Search resume
+
+    def update_vacations(self, user, text):
+        vacation_id = text.split(':')[-1]
+        JobManager(user_id=user.id).update_vacations(vacation_id=vacation_id)
+        self.view_vacations(user=user, text=text)
+
+    def view_vacations(self, user, text):
+        vacation_id = text.split(':')[-1]
+        vacancy = JobManager(
+            user_id=user.id).get_vacation_for_id(vacation_id=vacation_id)
+        text = self.text.view_vacations(vacancy=vacancy)
+        markup = self.markup.view_vacations(vacancy=vacancy)
+        self.edit_message_text(text=text, reply_markup=markup)
+
     def my_vacations(self, user):
         vacations = JobManager(user_id=user.id).get_vacations()
 
         if vacations:
-            text = self.text.my_resume()
+            text = self.text.my_vacations()
             markup = self.markup.my_vacations(vacations=vacations)
 
             if text and markup:

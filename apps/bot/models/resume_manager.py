@@ -66,3 +66,7 @@ class ResumeManager:
         resume = Resume.objects.filter(
             user_id=self.user_id).order_by('timestamp').reverse()
         return resume
+
+    def get_resume_for_id(self, resume_id):
+        resume = Resume.objects.get(id=resume_id)
+        return resume
