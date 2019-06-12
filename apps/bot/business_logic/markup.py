@@ -105,8 +105,12 @@ class Markup:
     def get_sub_categories(self):
         return list(itertools.chain(*self.get_data().values()))
 
-    def send_categories(self):
-        return self.send(self.categories, inline=True)
+    def send_categories(self, search=None):
+        if search:
+            data = [()]
+            return self.send(callback_data=data, inline=True)
+        else:
+            return self.send(self.categories, inline=True)
 
     def get_category(self, category: str):
         return defaultdict(list, filter(lambda x: x[0] == category,
@@ -170,3 +174,7 @@ class Markup:
         data = [('◀️ Назад', 'r:return'), item]
 
         return self.send(callback_data=data, inline=True)
+
+    def search_vacancy(self):
+        texts = ['Отдалённая работа']
+        return self.send(texts, inline=True)

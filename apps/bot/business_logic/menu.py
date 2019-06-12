@@ -8,6 +8,8 @@ from bot.models.job_manager import JobManager
 from bot.models.resume_manager import ResumeManager
 from bot.models.dialog_job_manager import DialogJobManager
 from bot.models.dialog_resume_manager import DialogResumeManager
+from bot.models.dialog_search_manager import DialogSearchManager
+from bot.models.city_manager import city_valid
 
 __all__ = ('Menu',)
 
@@ -42,6 +44,7 @@ class Menu:
             'Создать резюме': self.send_categories,
             '◀️ Назад': self.send_categories,
             'Где искать username?': self.where_to_find_username_link,
+            'Поиск вакансий': self.search_vacancy,
         }
 
     def send(self):
@@ -141,6 +144,11 @@ class Menu:
             elif self.check_work_description(user=user):
                 self.work_moderation(text=text, user=user)
 
+            # TODO: Search resume
+
+            if self.check_search_start(user=user):
+                self.search_city(user=user, text=text)
+
         # TODO: Update or delete vacations
 
         if 'vacations' in text:
@@ -163,7 +171,31 @@ class Menu:
         elif 'r:del' in text:
             self.delete_resume(user=user, text=text)
 
-        # TODO: Search resume
+    def check_search_category(self, user):
+        return DialogSearchManager(user_id=user.id).check_category()
+
+    def check_search_city(self, user):
+        return DialogSearchManager(user_id=user.id).check_city()
+
+    def search_city(self, user, text):
+        valid = city_valid(city_name=text)
+
+        if not valid:
+            return self.send_message(text='нет такого города')
+
+        DialogSearchManager(user_id=user.id).update_city()
+        self.send_categories(user=user)
+
+    def check_search_start(self, user):
+        return DialogSearchManager(user_id=user.id).check_start()
+
+    def search_vacancy(self, user):
+        dialog = DialogSearchManager(user_id=user.id)
+        dialog.clean()
+        dialog.start()
+        text = self.text.search_vacancy()
+        markup = self.markup.search_vacancy()
+        self.send_message(text=text, reply_markup=markup)
 
     def delete_resume(self, user, text):
         resume_id = text.split(':')[-1]
@@ -361,14 +393,18 @@ class Menu:
             dialog = DialogJobManager(user_id=user.id)
             dialog.clean()
             dialog.create()
-        else:
+        elif user.profile == 2:
             ResumeManager(user_id=user.id).clean()
             dialog = DialogResumeManager(user_id=user.id)
             dialog.clean()
             dialog.create()
 
         text = self.text.send_categories()
-        reply_markup = self.markup.send_categories()
+
+        if self.check_search_city(user=user):
+            reply_markup = self.markup.send_categories(search=True)
+        else:
+            reply_markup = self.markup.send_categories()
 
         try:
             self.edit_message_text(text=text, reply_markup=reply_markup)

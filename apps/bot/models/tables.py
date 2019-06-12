@@ -154,3 +154,10 @@ class ResumeDialog(IDialog):
     age = models.BooleanField(default=False)
     lang = models.BooleanField(default=False)
     education = models.BooleanField(default=False)
+
+
+class Searching(ICommonInfo):
+    start = models.BooleanField(default=False)
+    city = models.BooleanField(default=False)
+    category = models.BooleanField(default=False)
+    position = models.BooleanField(default=False)

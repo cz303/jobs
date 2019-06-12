@@ -275,3 +275,10 @@ class Text:
                     f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
                     f"&#160;</a>"
         return self.text
+
+    def search_vacancy(self):
+        self.text = '<b>Выбери город!</b>\nВ каком городе ты ищешь вакансию?' \
+                    ' Напиши правильно название своего города, или нажми' \
+                    ' кнопку отдалённая работа.<a href="https://' \
+                    'telegra.ph/file/7a42d93fa89138074d3f7.jpg">&#160;</a>'
+        return self.text
