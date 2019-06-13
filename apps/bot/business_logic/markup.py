@@ -107,7 +107,11 @@ class Markup:
 
     def send_categories(self, search=None):
         if search:
-            data = [()]
+            data = []
+
+            for category in self.categories:
+                data.append((category, f'search:{category}'))
+
             return self.send(callback_data=data, inline=True)
         else:
             return self.send(self.categories, inline=True)
@@ -116,9 +120,18 @@ class Markup:
         return defaultdict(list, filter(lambda x: x[0] == category,
                                         self.get_data().items()))
 
-    def send_sub_category(self, category):
-        return self.send(self.get_category(
-            category=category).get(category, []), inline=True)
+    def send_sub_category(self, category, search=None):
+        categories = self.get_category(category=category).get(category, [])
+
+        if search:
+            data = []
+
+            for category in categories:
+                data.append((category, f'search:{category}'))
+
+            return self.send(callback_data=data, inline=True)
+        else:
+            return self.send(category, inline=True)
 
     def write_to_employer(self):
         texts = ['Где искать username?']

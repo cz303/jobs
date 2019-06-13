@@ -161,3 +161,9 @@ class Searching(ICommonInfo):
     city = models.BooleanField(default=False)
     category = models.BooleanField(default=False)
     position = models.BooleanField(default=False)
+
+
+class Search(ICommonInfo):
+    category = models.CharField(max_length=255, null=True)
+    position = models.CharField(max_length=255, null=True)
+    city = models.CharField(max_length=255, null=True)

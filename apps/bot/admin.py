@@ -6,7 +6,9 @@ from bot.models.tables import (
     Job,
     Statistics,
     JobDialog,
-    ResumeDialog
+    ResumeDialog,
+    Searching as SearchDialog,
+    Search,
 )
 
 admin.site.register(User)
@@ -14,6 +16,8 @@ admin.site.register(City)
 admin.site.register(Statistics)
 admin.site.register(JobDialog)
 admin.site.register(ResumeDialog)
+admin.site.register(SearchDialog)
+admin.site.register(Search)
 
 
 @admin.register(Resume)

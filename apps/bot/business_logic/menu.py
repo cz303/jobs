@@ -3,13 +3,14 @@ from bot.business_logic.parser import Parser
 from bot.business_logic.text import Text
 from bot.business_logic.markup import Markup
 from telebot.apihelper import ApiException
-from bot.models.user_manager import UserManager
-from bot.models.job_manager import JobManager
-from bot.models.resume_manager import ResumeManager
-from bot.models.dialog_job_manager import DialogJobManager
-from bot.models.dialog_resume_manager import DialogResumeManager
-from bot.models.dialog_search_manager import DialogSearchManager
-from bot.models.city_manager import city_valid
+from bot.models.managers.user_manager import UserManager
+from bot.models.managers.job_manager import JobManager
+from bot.models.managers.resume_manager import ResumeManager
+from bot.models.managers.dialog_job_manager import DialogJobManager
+from bot.models.managers.dialog_resume_manager import DialogResumeManager
+from bot.models.managers.dialog_search_manager import DialogSearchManager
+from bot.models.managers.city_manager import city_valid
+from bot.models.managers.search_manager import SearchManager
 
 __all__ = ('Menu',)
 
@@ -146,8 +147,25 @@ class Menu:
 
             # TODO: Search resume
 
+            # First step
+
             if self.check_search_start(user=user):
                 self.search_city(user=user, text=text)
+
+            # Second step
+
+            elif self.check_search_city(user=user):
+                self.search_category(user=user, text=text)
+
+            # Three step
+
+            elif self.check_search_category(user=user):
+                self.search_sub_category(user=user, text=text)
+
+            # Four step final
+
+            elif self.check_search_sub_category(user=user):
+                self.search_response(user=user, text=text)
 
         # TODO: Update or delete vacations
 
@@ -171,6 +189,27 @@ class Menu:
         elif 'r:del' in text:
             self.delete_resume(user=user, text=text)
 
+    def search_response(self, text, user):
+        pass
+
+    def check_search_sub_category(self, user):
+        pass
+
+    def search_sub_category(self, user, text):
+        position = text.split(':')[-1]
+        SearchManager(user_id=user.id).update_position(position=position)
+        DialogSearchManager(user_id=user.id).update_position()
+
+        # send inline mode search
+
+    def search_category(self, user, text):
+        category = text.split(':')[-1]
+
+        SearchManager(user_id=user.id).update_category(category=category)
+        DialogSearchManager(user_id=user.id).update_category()
+
+        self.send_sub_category(user=user, category=category)
+
     def check_search_category(self, user):
         return DialogSearchManager(user_id=user.id).check_category()
 
@@ -183,7 +222,12 @@ class Menu:
         if not valid:
             return self.send_message(text='нет такого города')
 
+        search = SearchManager(user_id=user.id)
+        search.clean()
+        search.create_search(city=text)
+
         DialogSearchManager(user_id=user.id).update_city()
+
         self.send_categories(user=user)
 
     def check_search_start(self, user):
@@ -415,12 +459,16 @@ class Menu:
         if user.profile == 1:
             JobManager(user_id=user.id).create(category=category)
             DialogJobManager(user_id=user.id).update_category()
-        else:
+        elif user.profile == 2:
             ResumeManager(user_id=user.id).create(category=category)
             DialogResumeManager(user_id=user.id).update_category()
 
         text = self.text.send_sub_category()
-        reply_markup = self.markup.send_sub_category(category)
+
+        if self.check_search_sub_category(user=user):
+            reply_markup = self.markup.send_sub_category(category, search=True)
+        else:
+            reply_markup = self.markup.send_sub_category(category)
 
         self.edit_message_text(text=text, reply_markup=reply_markup)
 
