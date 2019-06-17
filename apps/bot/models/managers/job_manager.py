@@ -56,9 +56,16 @@ class JobManager:
         job.write_to_employer = write_to_employer
         job.save()
 
-    def get_vacations(self):
-        job = Job.objects.filter(
-            user_id=self.user_id).order_by('timestamp')
+    def get_vacations(self, params=None):
+        if params:
+            job = Job.objects.filter(user_id=self.user_id).filter(
+                city=params.city,
+                category=params.category,
+                position=params.position
+            ).order_by('timestamp')
+        else:
+            job = Job.objects.filter(
+                user_id=self.user_id).order_by('timestamp')
         return job
 
     def get_vacation_for_id(self, vacation_id):

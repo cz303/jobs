@@ -1,4 +1,8 @@
 import time
+
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, \
+    InlineQueryResultArticle, InputTextMessageContent
+
 from bot.business_logic.parser import Parser
 from bot.business_logic.text import Text
 from bot.business_logic.markup import Markup
@@ -26,6 +30,7 @@ class Menu:
         self.message_id = self.parser.message_id()
         self.user_id = self.parser.user_id()
         self.username = self.parser.username()
+        self.callback_query_id = self.parser.callback_id()
         self.user = UserManager(user_id=self.user_id, username=self.username)
 
     @property
@@ -193,14 +198,36 @@ class Menu:
         pass
 
     def check_search_sub_category(self, user):
-        pass
+        return DialogSearchManager(user_id=user.id).update_category()
 
     def search_sub_category(self, user, text):
         position = text.split(':')[-1]
         SearchManager(user_id=user.id).update_position(position=position)
         DialogSearchManager(user_id=user.id).update_position()
 
-        # send inline mode search
+        params = SearchManager(user_id=user.id).get()
+        results = []
+
+        if params:
+            jobs = JobManager(user_id=user.id).get_vacations(params)
+            markup = InlineKeyboardMarkup()
+            markup.add(InlineKeyboardButton(
+                text='◀️ Назад',
+                switch_inline_query_current_chat='#jobs'))
+            for job in jobs:
+                results.append(InlineQueryResultArticle(
+                    id=job.id,
+                    title=job.looking_for,
+                    description=f'{job.wage}\n{job.city if job.city else "Отдаленная работа"}',  # noqa
+                    input_message_content=InputTextMessageContent(
+                        message_text=text, parse_mode='HTML'),
+                    thumb_url='https://telegra.ph/file/c5edf06f95fc5e4bda351.jpg',  # noqa
+                    thumb_height=30,
+                    thumb_width=30,
+                    reply_markup=markup
+                ))
+        if results:
+            self.answer_inline_query(results=results)
 
     def search_category(self, user, text):
         category = text.split(':')[-1]
@@ -403,6 +430,17 @@ class Menu:
             parse_mode='HTML',
             reply_markup=reply_markup)
 
+    def answer_inline_query(self, results):
+        self.bot.answer_inline_query(
+            inline_query_id=self.callback_query_id,
+            results=results,
+            cache_time=1,
+            next_offset='',
+            switch_pm_parameter='jobs',
+            is_personal=True,
+            switch_pm_text=f'Нашел [{len(results)}]'
+        )
+
     def start_menu(self):
         self.user.create()
         text = self.text.start_menu()
@@ -465,7 +503,7 @@ class Menu:
 
         text = self.text.send_sub_category()
 
-        if self.check_search_sub_category(user=user):
+        if self.check_search_category(user=user):
             reply_markup = self.markup.send_sub_category(category, search=True)
         else:
             reply_markup = self.markup.send_sub_category(category)

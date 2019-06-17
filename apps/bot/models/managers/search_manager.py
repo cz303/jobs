@@ -4,6 +4,7 @@ __all__ = ('SearchManager',)
 
 
 class SearchManager:
+
     def __init__(self, user_id):
         self.user_id = user_id
 
@@ -24,3 +25,7 @@ class SearchManager:
 
     def clean(self):
         Search.objects.filter(user_id=self.user_id).delete()
+
+    def get(self):
+        return Search.objects.filter(
+            user_id=self.user_id).order_by('timestamp').reverse().first()

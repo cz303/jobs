@@ -127,11 +127,14 @@ class Markup:
             data = []
 
             for category in categories:
-                data.append((category, f'search:{category}'))
+                if category == '◀️ Назад':
+                    data.append((category, category))
+                else:
+                    data.append((category, f's:{category}'))
 
             return self.send(callback_data=data, inline=True)
         else:
-            return self.send(category, inline=True)
+            return self.send(categories, inline=True)
 
     def write_to_employer(self):
         texts = ['Где искать username?']
