@@ -51,6 +51,7 @@ class Menu:
             '◀️ Назад': self.send_categories,
             'Где искать username?': self.where_to_find_username_link,
             'Поиск вакансий': self.search_vacancy,
+            '#jobs': self.search_response,
         }
 
     def send(self):
@@ -66,7 +67,10 @@ class Menu:
             try:
                 return command()
             except TypeError:
-                return command(user=user)
+                try:
+                    return command(user=user)
+                except TypeError:
+                    return command(user=user, text=text)
 
         if text in self.markup.categories:
             self.send_sub_category(category=text, user=user)
@@ -165,12 +169,7 @@ class Menu:
             # Three step
 
             elif self.check_search_category(user=user):
-                self.search_sub_category(user=user, text=text)
-
-            # Four step final
-
-            elif self.check_search_sub_category(user=user):
-                self.search_response(user=user, text=text)
+                self.search_sub_category(user=user)
 
         # TODO: Update or delete vacations
 
@@ -195,26 +194,26 @@ class Menu:
             self.delete_resume(user=user, text=text)
 
     def search_response(self, text, user):
-        pass
-
-    def check_search_sub_category(self, user):
-        return DialogSearchManager(user_id=user.id).update_category()
-
-    def search_sub_category(self, user, text):
         position = text.split(':')[-1]
         SearchManager(user_id=user.id).update_position(position=position)
         DialogSearchManager(user_id=user.id).update_position()
 
-        params = SearchManager(user_id=user.id).get()
+        search = SearchManager(user_id=user.id).get()
         results = []
 
-        if params:
-            jobs = JobManager(user_id=user.id).get_vacations(params)
+        if search:
+            jobs = JobManager(user_id=user.id).get_vacations(search)
             markup = InlineKeyboardMarkup()
             markup.add(InlineKeyboardButton(
-                text='◀️ Назад',
-                switch_inline_query_current_chat='#jobs'))
+                text='◀️ Назад', switch_inline_query_current_chat='#jobs'))
             for job in jobs:
+                text = f'<b>{job.looking_for}</b>\n\
+                    <b>Зарплата:</b> {job.wage}\n\n' \
+                    f'<b>Город:</b> ' \
+                    f'{job.city if job.city else "Отдаленная работа"}\n\n' \
+                    f'<b>Опыт работы:</b> {job.experience}\n\n' \
+                    f'<b>Описание вакансии:</b> {job.description}\n\n' \
+                    f'<b>Написать работодателю:</b> @{job.write_to_employer}'
                 results.append(InlineQueryResultArticle(
                     id=job.id,
                     title=job.looking_for,
@@ -228,6 +227,20 @@ class Menu:
                 ))
         if results:
             self.answer_inline_query(results=results)
+
+    def search_sub_category(self, user):
+        search = SearchManager(user_id=user.id).get()
+        markup = InlineKeyboardMarkup()
+        markup.add(InlineKeyboardButton(
+            text='◀️ Назад',
+            callback_data='◀️ Назад'))
+        markup.add(InlineKeyboardButton(
+            text='Найти',
+            switch_inline_query_current_chat='#jobs'))
+        text = f'<b>Ты выбрал!\n</b>Категорию: {search.category}\n'\
+               f'Должность: {search.position}<a href="https:' \
+               f'//telegra.ph/file/bb8803646002d244de091.jpg">&#160;</a>'
+        self.edit_message_text(text=text, reply_markup=markup)
 
     def search_category(self, user, text):
         category = text.split(':')[-1]
@@ -432,7 +445,7 @@ class Menu:
 
     def answer_inline_query(self, results):
         self.bot.answer_inline_query(
-            inline_query_id=self.callback_query_id,
+            inline_query_id=self.chat_id,
             results=results,
             cache_time=1,
             next_offset='',

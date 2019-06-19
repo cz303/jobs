@@ -3,11 +3,12 @@ from marshmallow import (
     fields
 )
 
-__all__ = [
+__all__ = (
     'CallbackQuerySchema',
     'MessageSchema',
-    'EditDataCallbackQuery'
-]
+    'EditDataCallbackQuery',
+    'Search'
+)
 
 
 class User(Schema):
@@ -77,3 +78,15 @@ class CallbackQuerySchema(Schema):
 class EditDataCallbackQuery(Schema):
     update_id = fields.Integer()
     callback_query = fields.Nested(CallbackQueryEditDate)
+
+
+class InlineQuery(Schema):
+    id = fields.Str()
+    user = fields.Nested(User, data_key='from')
+    query = fields.Str()
+    offset = fields.Str()
+
+
+class Search(Schema):
+    update_id = fields.Integer()
+    inline_query = fields.Nested(InlineQuery)
