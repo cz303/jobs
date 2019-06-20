@@ -1,5 +1,8 @@
 from django.db import models
 from time import time
+import requests
+from django.conf import settings
+import json
 
 
 class User(models.Model):
@@ -61,6 +64,21 @@ class CommonInfo(ICommonInfo):
     created = models.DateField(auto_now=True, editable=False)
     deleted = models.BooleanField(default=False)
 
+    def reject(self):
+        text = f"<b>Вакансия не прошла модерацию!</b>\nПричина:" \
+            f" {self.failure_reason} " \
+            f"<a href='https://telegra.ph/file/bb8803646002d244de091.jpg'>" \
+            f"&#160;</a>"
+        requests.post(url=settings.URL,
+                      data={f"chat_id": {str(self.user.user_id)},
+                            "text": text,
+                            "parse_mode": "HTML",
+                            "reply_markup": json.dumps(
+                                {"inline_keyboard": [
+                                    [{
+                                        "text": "Редактировать",
+                                        "callback_data": "Редактировать"}]]})})
+
 
 class Job(CommonInfo):
     class Meta:
@@ -75,6 +93,37 @@ class Job(CommonInfo):
     def __str__(self):
         return self.category
 
+    def save(self, *args, **kwargs):
+        if self.moderation == 2:
+            self.failure_reason = ''
+            text = f'<b>{self.looking_for}</b>\n\n' \
+                f'<b>Зарплата:</b> {self.wage}\n\n' \
+                f'<b>Город:</b>' \
+                f' {self.city if self.city else "Отдаленная работа"}\n\n' \
+                f'<b>Опыт работы:</b> {self.experience}\n\n' \
+                f'<b>Описание вакансии:</b> {self.description}\n\n' \
+                f'<b>Написать работодателю:</b> @{self.write_to_employer}\n\n'\
+                f"<a href='https://" \
+                f"telegra.ph/file/f03179992f64479dc4b20.jpg'>"\
+                f"&#160;</a>"
+            requests.post(url=settings.URL,
+                          data={f"chat_id": {str(self.user.user_id)},
+                                "text": {text},
+                                "parse_mode": "HTML",
+                                "reply_markup": json.dumps(
+                                    {"inline_keyboard": [
+                                        # [{"text": "Редактировать",
+                                        #   "callback_data": "Редактировать"}],
+                                        [{"text": "✅ Опубликовать",
+                                          "callback_data": "✅ Опубликовать"}]]}
+                                )})
+        elif self.moderation == 3:
+            if self.failure_reason == '':
+                raise Exception('Поле "failure_reason" не должно быть пустым!')
+            self.reject()
+
+        super().save(*args, **kwargs)
+
 
 class Resume(CommonInfo):
     class Meta:
@@ -88,6 +137,39 @@ class Resume(CommonInfo):
 
     def __str__(self):
         return self.category
+
+    def save(self, *args, **kwargs):
+        if self.moderation == 2:
+            self.failure_reason = ''
+
+            text = f'<b>Имя: </b>{self.name}\n\n' \
+                f'<b>Возвраст:</b> {self.age}\n\n' \
+                f'<b>Желаемый город работы:</b>' \
+                f' {self.city if self.city else "Отдаленная работа"}\n\n' \
+                f'<b>Языки:</b> {self.lang}\n\n' \
+                f'<b>Опыт работы:</b> {self.experience}\n\n' \
+                f'<b>Образование: </b> {self.education}\n\n' \
+                f'<b>О себе:</b> {self.description}' \
+                f"<a href='https://" \
+                f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
+                f"&#160;</a>"
+            requests.post(url=settings.URL,
+                          data={f"chat_id": {str(self.user.user_id)},
+                                "text": {text},
+                                "parse_mode": "HTML",
+                                "reply_markup": json.dumps(
+                                    {"inline_keyboard": [
+                                        # [{"text": "Редактировать",
+                                        #   "callback_data": "Редактировать"}],
+                                        [{"text": "✅ Опубликовать",
+                                          "callback_data": "✅ Опубликовать"}]]}
+                                )})
+        elif self.moderation == 3:
+            if self.failure_reason == '':
+                raise Exception('Поле "failure_reason" не должно быть пустым!')
+            self.reject()
+
+        super().save(*args, **kwargs)
 
 
 class City(models.Model):

@@ -52,6 +52,8 @@ class Menu:
             'Где искать username?': self.where_to_find_username_link,
             'Поиск вакансий': self.search_vacancy,
             '#jobs': self.search_response,
+            '✅ Опубликовать': self.publish,
+            '✅ Начать': self.start_send,
         }
 
     def send(self):
@@ -192,6 +194,14 @@ class Menu:
 
         elif 'r:del' in text:
             self.delete_resume(user=user, text=text)
+
+    def start_send(self):
+        pass
+
+    def publish(self, user):
+        text = self.text.publish(user)
+        markup = self.markup.publish()
+        self.send_message(text=text, reply_markup=markup)
 
     def search_response(self, user):
         search = SearchManager(user_id=user.id).get()

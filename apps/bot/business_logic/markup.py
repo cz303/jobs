@@ -194,3 +194,7 @@ class Markup:
     def search_vacancy(self):
         texts = ['Отдалённая работа']
         return self.send(texts, inline=True)
+
+    def publish(self):
+        texts = ['✅ Начать']
+        return self.send(texts, inline=True)
