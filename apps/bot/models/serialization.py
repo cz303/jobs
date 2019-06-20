@@ -7,7 +7,8 @@ __all__ = (
     'CallbackQuerySchema',
     'MessageSchema',
     'EditDataCallbackQuery',
-    'Search'
+    'Search',
+    'Inline',
 )
 
 
@@ -90,3 +91,8 @@ class InlineQuery(Schema):
 class Search(Schema):
     update_id = fields.Integer()
     inline_query = fields.Nested(InlineQuery)
+
+
+class Inline(Schema):
+    update_id = fields.Integer()
+    message = fields.Nested(InlineMessage)

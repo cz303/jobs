@@ -169,7 +169,7 @@ class Menu:
             # Three step
 
             elif self.check_search_category(user=user):
-                self.search_sub_category(user=user)
+                self.search_sub_category(user=user, text=text)
 
         # TODO: Update or delete vacations
 
@@ -193,11 +193,7 @@ class Menu:
         elif 'r:del' in text:
             self.delete_resume(user=user, text=text)
 
-    def search_response(self, text, user):
-        position = text.split(':')[-1]
-        SearchManager(user_id=user.id).update_position(position=position)
-        DialogSearchManager(user_id=user.id).update_position()
-
+    def search_response(self, user):
         search = SearchManager(user_id=user.id).get()
         results = []
 
@@ -206,14 +202,16 @@ class Menu:
             markup = InlineKeyboardMarkup()
             markup.add(InlineKeyboardButton(
                 text='◀️ Назад', switch_inline_query_current_chat='#jobs'))
+
             for job in jobs:
-                text = f'<b>{job.looking_for}</b>\n\
-                    <b>Зарплата:</b> {job.wage}\n\n' \
-                    f'<b>Город:</b> ' \
-                    f'{job.city if job.city else "Отдаленная работа"}\n\n' \
-                    f'<b>Опыт работы:</b> {job.experience}\n\n' \
-                    f'<b>Описание вакансии:</b> {job.description}\n\n' \
-                    f'<b>Написать работодателю:</b> @{job.write_to_employer}'
+                text = f'<b>{job.looking_for}</b>\n\n' \
+                       f'<b>Зарплата:</b> {job.wage}\n\n' \
+                       f'<b>Город:</b> ' \
+                       f'{job.city if job.city else "Отдаленная работа"}\n\n' \
+                       f'<b>Опыт работы:</b> {job.experience}\n\n' \
+                       f'<b>Описание вакансии:</b> {job.description}\n\n' \
+                       f'<b>Написать работодателю:</b> @{job.write_to_employer}'  # noqa
+
                 results.append(InlineQueryResultArticle(
                     id=job.id,
                     title=job.looking_for,
@@ -223,13 +221,18 @@ class Menu:
                     thumb_url='https://telegra.ph/file/c5edf06f95fc5e4bda351.jpg',  # noqa
                     thumb_height=30,
                     thumb_width=30,
-                    reply_markup=markup
-                ))
+                    reply_markup=markup))
         if results:
             self.answer_inline_query(results=results)
 
-    def search_sub_category(self, user):
+    def search_sub_category(self, user, text):
+        position = text.split(':')[-1]
+
+        SearchManager(user_id=user.id).update_position(position=position)
+        DialogSearchManager(user_id=user.id).update_position()
+
         search = SearchManager(user_id=user.id).get()
+
         markup = InlineKeyboardMarkup()
         markup.add(InlineKeyboardButton(
             text='◀️ Назад',
@@ -237,9 +240,11 @@ class Menu:
         markup.add(InlineKeyboardButton(
             text='Найти',
             switch_inline_query_current_chat='#jobs'))
+
         text = f'<b>Ты выбрал!\n</b>Категорию: {search.category}\n'\
                f'Должность: {search.position}<a href="https:' \
                f'//telegra.ph/file/bb8803646002d244de091.jpg">&#160;</a>'
+
         self.edit_message_text(text=text, reply_markup=markup)
 
     def search_category(self, user, text):
