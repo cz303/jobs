@@ -86,10 +86,10 @@ WSGI_APPLICATION = 'apps.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME', 'postgres'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'test_11bot22'),
-        'HOST': os.environ.get('DB_HOST', 'db'),
+        'NAME': os.environ.get('DB_NAME', 'jobs'),
+        'USER': os.environ.get('DB_USER', 'advjobs'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', '11bot22'),
+        'HOST': os.environ.get('DB_HOST', '46.101.195.39'),
         'PORT': os.environ.get('DB_PORT', 5432),
     }
 }
@@ -148,3 +148,8 @@ TELEGRAM_URL = 'https://api.telegram.org'
 
 TOKEN = os.environ.get('TOKEN',
                        '768289439:AAE8MKKPicNI-SVmemRGqKX-B_qibFrBUaA')
+
+URL = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
+
+PUBLIC_KEY = os.getenv('PUBLIC_KEY')
+PRIVATE_KEY = os.getenv('PRIVATE_KEY')

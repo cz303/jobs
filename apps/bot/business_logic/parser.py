@@ -4,6 +4,7 @@ from bot.models.serialization import (
     EditDataCallbackQuery,
     Search,
     Inline,
+    Contact,
 )
 import ujson
 from marshmallow.exceptions import ValidationError
@@ -19,6 +20,7 @@ class Parser:
         self.edit_date = EditDataCallbackQuery()
         self.search = Search()
         self.inline = Inline()
+        self.contact = Contact()
         self.json = ujson
         self.data = self.serialization()
 
@@ -36,7 +38,10 @@ class Parser:
                     try:
                         result = self.search.load(body)
                     except ValidationError:
-                        result = self.inline.load(body)
+                        try:
+                            result = self.inline.load(body)
+                        except ValidationError:
+                            result = self.contact.load(body)
         return result
 
     def chat_id(self):
@@ -52,6 +57,8 @@ class Parser:
             return self.data['callback_query']['data']
         elif 'inline_query' in self.data:
             return self.data['inline_query']['query']
+        elif 'contact' in self.data['message']:
+            return self.data['message']['contact']
         else:
             return self.data['message']['text']
 

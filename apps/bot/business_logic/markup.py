@@ -18,7 +18,7 @@ class Markup:
 
         self.inline = InlineKeyboardMarkup()
 
-    def send(self, texts=None, callback_data=None, inline=None):
+    def send(self, texts=None, callback_data=None, inline=None, url=None):
         if isinstance(callback_data, list):
             for k, v in callback_data:
                 self.inline.add(InlineKeyboardButton(text=k, callback_data=v))
@@ -32,6 +32,12 @@ class Markup:
                         callback_data=callback_data or text,
                         url='https://t.me/share/url?url=https%3A//telegram'
                             '.me/RS_Work_bot'))
+                elif text == 'Оплатить':
+                    self.inline.add(InlineKeyboardButton(
+                        text=text,
+                        callback_data=callback_data or text,
+                        url=url
+                    ))
                     return self.inline
 
                 self.inline.add(InlineKeyboardButton(text=text,
@@ -198,3 +204,20 @@ class Markup:
     def publish(self):
         texts = ['✅ Начать']
         return self.send(texts, inline=True)
+
+    def my_score(self):
+        texts = ['Оплатить в - USD(доллар)']
+        return self.send(texts, inline=True)
+
+    @classmethod
+    def pay_buttons(cls):
+        return ['Оплатить 1 $', 'Оплатить 3 $', 'Оплатить 5 $',
+                'Оплатить 10 $', 'Оплатить 25 $']
+
+    def pay(self):
+        texts = self.pay_buttons()
+        return self.send(texts, inline=True)
+
+    def liq(self, url):
+        texts = ['Оплатить']
+        return self.send(texts=texts, inline=True, url=url)

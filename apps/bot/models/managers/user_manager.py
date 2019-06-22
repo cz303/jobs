@@ -5,7 +5,7 @@ __all__ = ('UserManager',)
 
 
 class UserManager:
-    def __init__(self, user_id, username):
+    def __init__(self, user_id, username=None):
         self.user_id = user_id
         self.username = username
 
@@ -28,3 +28,12 @@ class UserManager:
             return User.objects.get(user_id=self.user_id)
         except User.DoesNotExist:
             pass
+
+    def set_phone(self, phone):
+        user = User.objects.get(user_id=self.user_id)
+        user.phone = phone
+        user.save()
+
+    def get_score(self):
+        user = User.objects.get(user_id=self.user_id)
+        return user.credit

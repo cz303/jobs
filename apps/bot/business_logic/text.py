@@ -300,3 +300,24 @@ class Text:
                    '<a href="https://' \
                    'telegra.ph/file/8082b45ad06ea8bc2805e.jpg">&#8205;</a>'
         return self.text
+
+    def my_score(self, balance):
+        self.text = '<b>Мой счёт!</b>\nЧтобы начать продвижение ' \
+                    'твоей вакансии, на счету должно быть минимум 1$\n\n💰<b>' \
+                    f'{balance}$</b><a href="https://' \
+                    f'telegra.ph/file/8082b45ad06ea8bc2805e.jpg">&#8205;</a>'
+        return self.text
+
+    def pay(self):
+        self.text = '<b>Выбери сумму оплаты!</b><a href="https://' \
+                    'telegra.ph/file/8082b45ad06ea8bc2805e.jpg">&#8205;</a>'
+        return self.text
+
+    def redirect_to_liq_error(self):
+        self.text = 'Произошла ошибка. Попробуйте позже.'
+        return self.text
+
+    def liq(self, count, value):
+        self.text = f'<b>К оплате - {count}{value}</b><a href="https://' \
+                    f'telegra.ph/file/8082b45ad06ea8bc2805e.jpg">&#8205;</a>',
+        return self.text

@@ -9,6 +9,7 @@ __all__ = (
     'EditDataCallbackQuery',
     'Search',
     'Inline',
+    'Contact',
 )
 
 
@@ -42,6 +43,17 @@ class ReplyMarkup(Schema):
 
 class InlineMessage(Message):
     reply_markup = fields.Nested(ReplyMarkup)
+
+
+class ContactObj(Schema):
+    phone_number = fields.Str()
+    first_name = fields.Str()
+    user_id = fields.Integer()
+
+
+class ContactMessage(Message):
+    contact = fields.Nested(ContactObj)
+    reply_to_message = fields.Nested(Message)
 
 
 class InlineMessageEditDate(Message):
@@ -96,3 +108,8 @@ class Search(Schema):
 class Inline(Schema):
     update_id = fields.Integer()
     message = fields.Nested(InlineMessage)
+
+
+class Contact(Schema):
+    update_id = fields.Integer()
+    message = fields.Nested(ContactMessage)

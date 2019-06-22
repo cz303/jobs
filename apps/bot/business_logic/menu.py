@@ -1,8 +1,7 @@
 import time
-
+from django.conf import settings
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, \
     InlineQueryResultArticle, InputTextMessageContent
-
 from bot.business_logic.parser import Parser
 from bot.business_logic.text import Text
 from bot.business_logic.markup import Markup
@@ -15,8 +14,7 @@ from bot.models.managers.dialog_resume_manager import DialogResumeManager
 from bot.models.managers.dialog_search_manager import DialogSearchManager
 from bot.models.managers.city_manager import city_valid
 from bot.models.managers.search_manager import SearchManager
-
-__all__ = ('Menu',)
+from bot.business_logic.liqpay import LiqPay
 
 
 class Menu:
@@ -54,6 +52,7 @@ class Menu:
             '#jobs': self.search_response,
             '✅ Опубликовать': self.publish,
             '✅ Начать': self.start_send,
+            'Оплатить в - USD(доллар)': self.pay,
         }
 
     def send(self):
@@ -62,6 +61,9 @@ class Menu:
 
         if not user:
             return self.start_menu()
+
+        if isinstance(text, dict):
+            return self.my_score(text=text)
 
         command = self.command_maps.get(text, None)
 
@@ -76,6 +78,9 @@ class Menu:
 
         if text in self.markup.categories:
             self.send_sub_category(category=text, user=user)
+
+        if text in self.markup.pay_buttons():
+            self.redirect_to_liq(text=text, user=user)
 
         # TODO: create job
 
@@ -194,6 +199,42 @@ class Menu:
 
         elif 'r:del' in text:
             self.delete_resume(user=user, text=text)
+
+    def redirect_to_liq(self, text, user):
+        amount = text.split()[1]
+        liq_pay = LiqPay(settings.PUBLIC_KEY, settings.PRIVATE_KEY)
+        res = liq_pay.api(url='request', params={"action": "invoice_bot",
+                                                 "version": "3",
+                                                 "amount": amount,
+                                                 "currency": "USD",
+                                                 "order_id": int(time.time()),
+                                                 "phone": user.phone})
+        if res['status'] == 'error':
+            text = self.text.redirect_to_liq_error()
+            self.send_message(text=text)
+
+            time.sleep(3)
+            self.start_menu()
+
+        elif res['status'] == 'invoice_wait':
+            money = text.split()[1]
+            value = text.split()[2]
+            text = self.text.liq(count=money, value=value)
+            markup = self.markup.liq(url=res.get('href'))
+            self.send_message(text=text, reply_markup=markup)
+
+    def pay(self):
+        text = self.text.pay()
+        markup = self.markup.pay()
+        self.send_message(text=text, reply_markup=markup)
+
+    def my_score(self, text):
+        user = UserManager(user_id=self.user_id)
+        user.set_phone(phone=text.get('phone_number'))
+        balance = user.get_score()
+        text = self.text.my_score(balance)
+        markup = self.markup.my_score()
+        self.send_message(text=text, reply_markup=markup)
 
     def start_send(self):
         pass
