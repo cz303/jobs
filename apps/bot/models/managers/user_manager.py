@@ -37,3 +37,8 @@ class UserManager:
     def get_score(self):
         user = User.objects.get(user_id=self.user_id)
         return user.credit
+
+    def update_credit(self, credit):
+        user = User.objects.get(user_id=self.user_id)
+        user.credit = credit
+        user.save()

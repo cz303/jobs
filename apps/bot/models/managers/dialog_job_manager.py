@@ -1,11 +1,8 @@
 from bot.models.tables import JobDialog
+from .base_manager import Manager
 
-__all__ = ('DialogJobManager',)
 
-
-class DialogJobManager:
-    def __init__(self, user_id):
-        self.user_id = user_id
+class DialogJobManager(Manager):
 
     def create(self):
         JobDialog.objects.create(user_id=self.user_id, create_job=True)

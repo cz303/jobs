@@ -338,3 +338,26 @@ class Text:
         self.text = '<b>Начинаю продвижение вакансии!</b><a href="https://' \
                     'telegra.ph/file/4539f1c1b87659d4f66ee.jpg">&#160;</a>'
         return self.text
+
+    def send_resume(self, job):
+        self.text = f"<b>Появилась новая вакансия по твоему профилю:" \
+                        f"</b>\n\n<b>Ищу: {job.looking_for}</b>\n\n" \
+                        f"<b>Зарплата:</b> {job.wage}\n\n<b>Город:</b>" \
+                        f" {job.city or 'Отдаленная работа'}\n\n" \
+                        f"<b>Опыт работы:</b>" \
+                        f" {job.experience}\n\n<b>Описание вакансии:</b>" \
+                        f" {job.description}\n\n" \
+                        f"<b>Написать работодателю:</b>" \
+                        f" @{job.write_to_employer}"
+        return self.text
+
+    def statistics(self, count, price, funds_spent, credit):
+        msg = "пользователям" if count > 1 else "пользователю"
+        self.text = '<b>📊 Статистика по рассылке вакансии:</b>\n\n' \
+                    f'Сделана рассылка: {count} {msg}\n' \
+                    f'Цена одного сообщения: {price}$ (2 цента)\n' \
+                    f'Потрачено средств: {funds_spent}$\n\n' \
+                    f'💰 <b>{round(credit, 2)}$</b>' \
+                    '<a href="https://' \
+                    'telegra.ph/file/e56a1c86e5c97e6b5f818.jpg">&#160;</a>'
+        return self.text

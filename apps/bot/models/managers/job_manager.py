@@ -1,11 +1,8 @@
 from bot.models.tables import Job
+from .base_manager import Manager
 
-__all__ = ('JobManager',)
 
-
-class JobManager:
-    def __init__(self, user_id):
-        self.user_id = user_id
+class JobManager(Manager):
 
     def create(self, category):
         Job.objects.create(

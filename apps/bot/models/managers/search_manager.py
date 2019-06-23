@@ -1,12 +1,8 @@
 from bot.models.tables import Search
+from .base_manager import Manager
 
-__all__ = ('SearchManager',)
 
-
-class SearchManager:
-
-    def __init__(self, user_id):
-        self.user_id = user_id
+class SearchManager(Manager):
 
     def create_search(self, city):
         return Search.objects.create(user_id=self.user_id, city=city)

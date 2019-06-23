@@ -1,11 +1,8 @@
 from bot.models.tables import ResumeDialog
+from .base_manager import Manager
 
-__all__ = ('DialogResumeManager',)
 
-
-class DialogResumeManager:
-    def __init__(self, user_id):
-        self.user_id = user_id
+class DialogResumeManager(Manager):
 
     def create(self):
         ResumeDialog.objects.create(user_id=self.user_id, create_resume=True)

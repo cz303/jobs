@@ -1,11 +1,8 @@
 from bot.models.tables import Searching
+from .base_manager import Manager
 
-__all__ = ('DialogSearchManager',)
 
-
-class DialogSearchManager:
-    def __init__(self, user_id):
-        self.user_id = user_id
+class DialogSearchManager(Manager):
 
     def start(self):
         Searching.objects.create(user_id=self.user_id, start=True)

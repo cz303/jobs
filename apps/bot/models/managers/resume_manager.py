@@ -1,11 +1,8 @@
 from bot.models.tables import Resume
+from .base_manager import Manager
 
-__all__ = ('ResumeManager',)
 
-
-class ResumeManager:
-    def __init__(self, user_id):
-        self.user_id = user_id
+class ResumeManager(Manager):
 
     def create(self, category):
         Resume.objects.create(

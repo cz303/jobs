@@ -15,6 +15,7 @@ from bot.models.managers.dialog_search_manager import DialogSearchManager
 from bot.models.managers.city_manager import city_valid
 from bot.models.managers.search_manager import SearchManager
 from bot.business_logic.liqpay import LiqPay
+from bot.models.managers.statistics_manager import StatisticsManager
 
 
 class Menu:
@@ -258,6 +259,28 @@ class Menu:
                 return self.send_message(text=text)
             else:
                 text = self.text.start_send()
+                self.send_message(text=text)
+                # рассылка рабочим
+                for i in resumes:
+                    text = self.text.send_resume(job)
+                    self.send_message(user_id=i.user.user_id, text=text)
+                # сбор статистики
+                count = len(resumes)
+                funds_spent = count * price
+                sent = [i.user.user_id for i in resumes]
+                # сохраняем статистику
+                StatisticsManager(user_id=user.id).save(
+                    count=count,
+                    sent=sent,
+                    price=price,
+                    funds_spent=funds_spent)
+                # считаем баланс
+                balance = self.user.get_score()
+                credit = float(balance) - funds_spent
+                # обновляем баланс
+                self.user.update_credit(credit=credit)
+                # вывод статистики
+                text = self.text.statistics(count, price, funds_spent, credit)
                 self.send_message(text=text)
 
     def publish(self, user):
@@ -510,9 +533,9 @@ class Menu:
     def check_write_to_employer(self, user):
         return DialogJobManager(user_id=user.id).check_write_to_employer()
 
-    def send_message(self, text, reply_markup=None):
+    def send_message(self, text, user_id=None, reply_markup=None):
         self.bot.send_message(
-            chat_id=self.chat_id,
+            chat_id=user_id or self.chat_id,
             text=text,
             parse_mode='HTML',
             reply_markup=reply_markup)
