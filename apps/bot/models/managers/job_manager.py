@@ -68,6 +68,11 @@ class JobManager:
                 user_id=self.user_id).order_by('timestamp')
         return job
 
+    def last_job(self):
+        job = Job.objects.filter(user_id=self.user_id).order_by(
+            'timestamp').reverse().first()
+        return job
+
     def get_vacation_for_id(self, vacation_id):
         job = Job.objects.get(id=vacation_id)
         return job
@@ -79,3 +84,12 @@ class JobManager:
 
     def delete_vacations(self, vacation_id):
         Job.objects.get(id=vacation_id).delete()
+
+    def publish(self):
+        resume = Job.objects.filter(
+            user_id=self.user_id, publish=False
+        ).order_by('timestamp').reverse().first()
+        if resume:
+            resume.publish = True
+            resume.is_active = True
+            resume.save()

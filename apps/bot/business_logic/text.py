@@ -321,3 +321,20 @@ class Text:
         self.text = f'<b>К оплате - {count}{value}</b><a href="https://' \
                     f'telegra.ph/file/8082b45ad06ea8bc2805e.jpg">&#8205;</a>',
         return self.text
+
+    def top_up_account(self, balance):
+        self.text = f'<b>Нужно пополнить счет! Ваш счет {balance}$</b>' \
+                    f'<a href="https://' \
+                    f'telegra.ph/file/4539f1c1b87659d4f66ee.jpg">&#160;</a>'
+        return self.text
+
+    def not_jobs(self):
+        self.text = '<b>По вашему запросу вакансий еще нет!</b>' \
+                    '<a href="https://' \
+                    'telegra.ph/file/4539f1c1b87659d4f66ee.jpg">&#160;</a>'
+        return self.text
+
+    def start_send(self):
+        self.text = '<b>Начинаю продвижение вакансии!</b><a href="https://' \
+                    'telegra.ph/file/4539f1c1b87659d4f66ee.jpg">&#160;</a>'
+        return self.text

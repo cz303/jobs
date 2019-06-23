@@ -78,3 +78,21 @@ class ResumeManager:
 
     def delete_resume(self, resume_id):
         Resume.objects.get(id=resume_id).delete()
+
+    def search_resume(self, city, category, posistion):
+        resume = Resume.objects.filter(
+            category=category,
+            city=city,
+            position=posistion,
+            moderation=2,
+            publish=True
+        )
+        return resume
+
+    def publish(self):
+        resume = Resume.objects.filter(
+            user_id=self.user_id, publish=False
+        ).order_by('timestamp').reverse().first()
+        resume.publish = True
+        resume.is_active = True
+        resume.save()

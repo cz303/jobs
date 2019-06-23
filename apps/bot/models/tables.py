@@ -3,6 +3,7 @@ from time import time
 import requests
 from django.conf import settings
 import json
+from .exeptions import FailureReasonError
 
 
 class User(models.Model):
@@ -18,7 +19,7 @@ class User(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     user_id = models.IntegerField(null=False, unique=True)
     phone = models.CharField(max_length=25, null=True, blank=True)
-    first_name = models.CharField(max_length=255, null=True)
+    first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255, null=True)
     credit = models.CharField(max_length=255, default=0.00)
@@ -65,19 +66,15 @@ class CommonInfo(ICommonInfo):
     deleted = models.BooleanField(default=False)
 
     def reject(self):
-        text = f"<b>Вакансия не прошла модерацию!</b>\nПричина:" \
-            f" {self.failure_reason} " \
-            f"<a href='https://telegra.ph/file/bb8803646002d244de091.jpg'>" \
+        text = f"<b>❌ Ошибка!</b>\n{self.failure_reason}\n\n" \
+            f"Исправь ошибку, которая указана выше," \
+            f" и создай вакансию заново, нажми кнопку 'Создать вакансию'.\n\n"\
+            f"<a href='https://telegra.ph/file/98cad48a0b2343f710f96.jpg'>" \
             f"&#160;</a>"
         requests.post(url=settings.URL,
                       data={f"chat_id": {str(self.user.user_id)},
                             "text": text,
-                            "parse_mode": "HTML",
-                            "reply_markup": json.dumps(
-                                {"inline_keyboard": [
-                                    [{
-                                        "text": "Редактировать",
-                                        "callback_data": "Редактировать"}]]})})
+                            "parse_mode": "HTML"})
 
 
 class Job(CommonInfo):
@@ -93,33 +90,35 @@ class Job(CommonInfo):
     def __str__(self):
         return self.category
 
+    def confirm(self):
+        text = f'<b>{self.looking_for}</b>\n\n' \
+            f'<b>Зарплата:</b> {self.wage}\n\n' \
+            f'<b>Город:</b>' \
+            f' {self.city if self.city else "Отдаленная работа"}\n\n' \
+            f'<b>Опыт работы:</b> {self.experience}\n\n' \
+            f'<b>Описание вакансии:</b> {self.description}\n\n' \
+            f'<b>Написать работодателю:</b> @{self.write_to_employer}\n\n' \
+            f"<a href='https://" \
+            f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
+            f"&#160;</a>"
+        return requests.post(
+            url=settings.URL,
+            data={f"chat_id": {str(self.user.user_id)},
+                  "text": {text},
+                  "parse_mode": "HTML",
+                  "reply_markup": json.dumps(
+                      {"inline_keyboard": [
+                          [{"text": "✅ Опубликовать",
+                            "callback_data": "✅ Опубликовать"}]]})})
+
     def save(self, *args, **kwargs):
         if self.moderation == 2:
             self.failure_reason = ''
-            text = f'<b>{self.looking_for}</b>\n\n' \
-                f'<b>Зарплата:</b> {self.wage}\n\n' \
-                f'<b>Город:</b>' \
-                f' {self.city if self.city else "Отдаленная работа"}\n\n' \
-                f'<b>Опыт работы:</b> {self.experience}\n\n' \
-                f'<b>Описание вакансии:</b> {self.description}\n\n' \
-                f'<b>Написать работодателю:</b> @{self.write_to_employer}\n\n'\
-                f"<a href='https://" \
-                f"telegra.ph/file/f03179992f64479dc4b20.jpg'>"\
-                f"&#160;</a>"
-            requests.post(url=settings.URL,
-                          data={f"chat_id": {str(self.user.user_id)},
-                                "text": {text},
-                                "parse_mode": "HTML",
-                                "reply_markup": json.dumps(
-                                    {"inline_keyboard": [
-                                        # [{"text": "Редактировать",
-                                        #   "callback_data": "Редактировать"}],
-                                        [{"text": "✅ Опубликовать",
-                                          "callback_data": "✅ Опубликовать"}]]}
-                                )})
+            self.confirm()
         elif self.moderation == 3:
             if self.failure_reason == '':
-                raise Exception('Поле "failure_reason" не должно быть пустым!')
+                raise FailureReasonError(
+                    'Поле "failure_reason" не должно быть пустым!')
             self.reject()
 
         super().save(*args, **kwargs)
@@ -138,35 +137,51 @@ class Resume(CommonInfo):
     def __str__(self):
         return self.category
 
+    def confirm(self):
+        text = f'<b>Имя: </b>{self.name}\n\n' \
+            f'<b>Возвраст:</b> {self.age}\n\n' \
+            f'<b>Желаемый город работы:</b>' \
+            f' {self.city if self.city else "Отдаленная работа"}\n\n' \
+            f'<b>Языки:</b> {self.lang}\n\n' \
+            f'<b>Опыт работы:</b> {self.experience}\n\n' \
+            f'<b>Образование: </b> {self.education}\n\n' \
+            f'<b>О себе:</b> {self.description}' \
+            f"<a href='https://" \
+            f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
+            f"&#160;</a>"
+        return requests.post(
+            url=settings.URL,
+            data={
+                f"chat_id": {
+                    str(self.user.user_id)
+                },
+                "text": {
+                    text
+                },
+                "parse_mode": "HTML",
+                "reply_markup": json.dumps(
+                    {
+                        "inline_keyboard": [
+                            [
+                                {
+                                    "text": "✅ Опубликовать",
+                                    "callback_data": "✅ Опубликовать"
+                                }
+                            ]
+                        ]
+                    }
+                )
+            }
+        )
+
     def save(self, *args, **kwargs):
         if self.moderation == 2:
             self.failure_reason = ''
-
-            text = f'<b>Имя: </b>{self.name}\n\n' \
-                f'<b>Возвраст:</b> {self.age}\n\n' \
-                f'<b>Желаемый город работы:</b>' \
-                f' {self.city if self.city else "Отдаленная работа"}\n\n' \
-                f'<b>Языки:</b> {self.lang}\n\n' \
-                f'<b>Опыт работы:</b> {self.experience}\n\n' \
-                f'<b>Образование: </b> {self.education}\n\n' \
-                f'<b>О себе:</b> {self.description}' \
-                f"<a href='https://" \
-                f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
-                f"&#160;</a>"
-            requests.post(url=settings.URL,
-                          data={f"chat_id": {str(self.user.user_id)},
-                                "text": {text},
-                                "parse_mode": "HTML",
-                                "reply_markup": json.dumps(
-                                    {"inline_keyboard": [
-                                        # [{"text": "Редактировать",
-                                        #   "callback_data": "Редактировать"}],
-                                        [{"text": "✅ Опубликовать",
-                                          "callback_data": "✅ Опубликовать"}]]}
-                                )})
+            self.confirm()
         elif self.moderation == 3:
             if self.failure_reason == '':
-                raise Exception('Поле "failure_reason" не должно быть пустым!')
+                raise FailureReasonError(
+                    'Поле "failure_reason" не должно быть пустым!')
             self.reject()
 
         super().save(*args, **kwargs)

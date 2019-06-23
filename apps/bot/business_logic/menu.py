@@ -226,7 +226,7 @@ class Menu:
     def pay(self):
         text = self.text.pay()
         markup = self.markup.pay()
-        self.send_message(text=text, reply_markup=markup)
+        self.edit_message_text(text=text, reply_markup=markup)
 
     def my_score(self, text):
         user = UserManager(user_id=self.user_id)
@@ -234,15 +234,41 @@ class Menu:
         balance = user.get_score()
         text = self.text.my_score(balance)
         markup = self.markup.my_score()
-        self.send_message(text=text, reply_markup=markup)
+        self.edit_message_text(text=text, reply_markup=markup)
 
-    def start_send(self):
-        pass
+    def start_send(self, user, text):
+        price = 0.02
+        if float(user.credit) < price:
+            text = self.text.top_up_account(balance=user.credit)
+            markup = self.markup.my_score()
+            return self.edit_message_text(text=text, reply_markup=markup)
+        else:
+            # резюме которое будем рассылать
+            job = JobManager(user_id=user.id).last_job()
+
+            # ищем рабочих по заданым критериям
+            resumes = ResumeManager(user_id=self.user_id).search_resume(
+                city=job.city,
+                category=job.category,
+                posistion=job.position
+            )
+
+            if not resumes:
+                text = self.text.not_jobs()
+                return self.send_message(text=text)
+            else:
+                text = self.text.start_send()
+                self.send_message(text=text)
 
     def publish(self, user):
         text = self.text.publish(user)
         markup = self.markup.publish()
-        self.send_message(text=text, reply_markup=markup)
+        if user.profile == 1:
+            JobManager(user_id=user.id).publish()
+            self.edit_message_text(text=text, reply_markup=markup)
+        else:
+            ResumeManager(user_id=user.id).publish()
+            self.send_message(text=text)
 
     def search_response(self, user):
         search = SearchManager(user_id=user.id).get()

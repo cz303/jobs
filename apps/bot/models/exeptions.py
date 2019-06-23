@@ -1,0 +1,2 @@
+class FailureReasonError(Exception):
+    pass
