@@ -16,6 +16,7 @@ from bot.models.managers.city_manager import city_valid
 from bot.models.managers.search_manager import SearchManager
 from bot.business_logic.liqpay import LiqPay
 from bot.models.managers.statistics_manager import StatisticsManager
+from bot.models.tables import Statistics
 
 
 class Menu:
@@ -235,7 +236,7 @@ class Menu:
         balance = user.get_score()
         text = self.text.my_score(balance)
         markup = self.markup.my_score()
-        self.edit_message_text(text=text, reply_markup=markup)
+        self.send_message(text=text, reply_markup=markup)
 
     def start_send(self, user, text):
         price = 0.02
@@ -248,40 +249,76 @@ class Menu:
             job = JobManager(user_id=user.id).last_job()
 
             # ищем рабочих по заданым критериям
-            resumes = ResumeManager(user_id=self.user_id).search_resume(
-                city=job.city,
-                category=job.category,
-                posistion=job.position
-            )
+            try:
+                resumes = ResumeManager(user_id=self.user_id).search_resume(
+                    city=job.city,
+                    category=job.category,
+                    posistion=job.position
+                )
 
-            if not resumes:
-                text = self.text.not_jobs()
-                return self.send_message(text=text)
-            else:
-                text = self.text.start_send()
-                self.send_message(text=text)
-                # рассылка рабочим
-                for i in resumes:
-                    text = self.text.send_resume(job)
-                    self.send_message(user_id=i.user.user_id, text=text)
-                # сбор статистики
-                count = len(resumes)
-                funds_spent = count * price
-                sent = [i.user.user_id for i in resumes]
-                # сохраняем статистику
-                StatisticsManager(user_id=user.id).save(
-                    count=count,
-                    sent=sent,
-                    price=price,
-                    funds_spent=funds_spent)
-                # считаем баланс
-                balance = self.user.get_score()
-                credit = float(balance) - funds_spent
-                # обновляем баланс
-                self.user.update_credit(credit=credit)
-                # вывод статистики
-                text = self.text.statistics(count, price, funds_spent, credit)
-                self.send_message(text=text)
+                if not resumes:
+                    text = self.text.not_jobs()
+                    return self.send_message(text=text)
+                else:
+                    text = self.text.start_send()
+                    self.send_message(text=text)
+                    # рассылка рабочим
+                    for i in resumes:
+                        text = self.text.send_resume(job)
+                        self.send_message(user_id=i.user.user_id, text=text)
+                    # сбор статистики
+                    count = len(resumes)
+                    funds_spent = count * price
+                    sent = [i.user.user_id for i in resumes]
+                    stat = StatisticsManager(user_id=user.id)
+                    try:
+                        free = stat.free_send()
+                    except Statistics.DoesNotExist:
+                        stat.create()
+                        free = stat.free_send()
+                    # перые 10 рассылок
+                    st = stat.get()
+                    if free > 0:
+                        free_send = float(free) - count
+                        text = self.text.statistics(
+                            count=count,
+                            price=price,
+                            funds_spent=funds_spent,
+                            free_send_count=st.free_send - count,
+                            free_send=count
+                        )
+                        self.send_message(text=text)
+                        stat.save(
+                            count=float(st.count) + float(count),
+                            sent_to_users=sent,
+                            price=price,
+                            funds_spent=float(
+                                st.funds_spent) + float(funds_spent),
+                            free_send=free_send
+                        )
+                    else:
+                        # считаем баланс
+                        balance = self.user.get_score()
+                        credit = float(balance) - funds_spent
+                        # обновляем баланс
+                        self.user.update_credit(credit=credit)
+                        text = self.text.statistics(
+                            count=count,
+                            price=price,
+                            funds_spent=funds_spent,
+                            credit=credit
+                        )
+                        stat.save(
+                            count=float(st.count) + float(count),
+                            sent_to_users=sent,
+                            price=price,
+                            funds_spent=float(
+                                st.funds_spent) + float(funds_spent),
+                            free_send=0
+                        )
+                        self.send_message(text=text)
+            except AssertionError:
+                pass
 
     def publish(self, user):
         text = self.text.publish(user)
@@ -484,7 +521,8 @@ class Menu:
         ResumeManager(user_id=user.id).update_lang(lang=text)
         DialogResumeManager(user_id=user.id).experience()
         text = self.text.work_experience()
-        self.send_message(text=text)
+        markup = self.markup.experience()
+        self.send_message(text=text, reply_markup=markup)
 
     def moderation(self, text, user):
         JobManager(user_id=user.id).update_write_to_employer(
@@ -656,7 +694,8 @@ class Menu:
         JobManager(user_id=user.id).update_wage(wage=text)
         DialogJobManager(user_id=user.id).city()
         text = self.text.city()
-        self.send_message(text=text)
+        markup = self.markup.city()
+        self.send_message(text=text, reply_markup=markup)
 
     def lang(self, text, user):
         ResumeManager(user_id=user.id).update_city(city=text)
@@ -674,7 +713,8 @@ class Menu:
         JobManager(user_id=user.id).update_city(city=text)
         DialogJobManager(user_id=user.id).experience()
         text = self.text.experience()
-        self.send_message(text=text)
+        markup = self.markup.experience()
+        self.send_message(text=text, reply_markup=markup)
 
     def description(self, text, user):
         JobManager(user_id=user.id).update_experience(experience=text)

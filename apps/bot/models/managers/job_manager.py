@@ -32,7 +32,10 @@ class JobManager(Manager):
     def update_city(self, city):
         job = Job.objects.filter(
             user_id=self.user_id).order_by('timestamp').reverse().first()
-        job.city = city
+        if city == 'Отдалённая работа':
+            job.remote = True
+        else:
+            job.city = city
         job.save()
 
     def update_experience(self, experience):

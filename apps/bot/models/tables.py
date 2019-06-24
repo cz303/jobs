@@ -206,7 +206,7 @@ class Statistics(models.Model):
     # who did the newsletter
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # who sent the list from id
-    sent = models.CharField(max_length=500, blank=True)
+    sent_to_users = models.CharField(max_length=500, blank=True)
     # number sent out
     count = models.IntegerField()
     # price of one mailing
@@ -215,6 +215,8 @@ class Statistics(models.Model):
     funds_spent = models.DecimalField(max_digits=8, decimal_places=2,
                                       default=0.00)
     created = models.DateField(auto_now=True, editable=False)
+    # free send default 10
+    free_send = models.IntegerField(default=10)
 
     def __str__(self):
         return self.user.username

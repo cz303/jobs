@@ -32,7 +32,10 @@ class ResumeManager(Manager):
     def update_city(self, city):
         resume = Resume.objects.filter(
             user_id=self.user_id).order_by('timestamp').reverse().first()
-        resume.city = city
+        if city == 'Отдалённая работа':
+            resume.remote = True
+        else:
+            resume.city = city
         resume.save()
 
     def update_lang(self, lang):

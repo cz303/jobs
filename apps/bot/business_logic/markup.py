@@ -39,7 +39,6 @@ class Markup:
                         url=url
                     ))
                     return self.inline
-
                 self.inline.add(InlineKeyboardButton(text=text,
                                                      callback_data=text))
             return self.inline
@@ -221,3 +220,11 @@ class Markup:
     def liq(self, url):
         texts = ['Оплатить']
         return self.send(texts=texts, inline=True, url=url)
+
+    def city(self):
+        texts = ['Отдалённая работа']
+        return self.send(texts=texts, inline=True)
+
+    def experience(self):
+        texts = ['Нет опыта', '1 год', '2 года', '3 года', '5 лет']
+        return self.send(texts=texts, inline=True)
