@@ -255,7 +255,7 @@ class Text:
                         f'<b>Описание вакансии:</b>' \
                         f' {vacancy.description}\n\n' \
                         f'<b>Написать работодателю:</b>' \
-                        f' @{vacancy.write_to_employer}' \
+                        f' {vacancy.write_to_employer}' \
                         f"<a href='https:" \
                         f"//telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
                         f"&#8205;</a>",
@@ -347,7 +347,7 @@ class Text:
                         f" {job.experience}\n\n<b>Описание вакансии:</b>" \
                         f" {job.description}\n\n" \
                         f"<b>Написать работодателю:</b>" \
-                        f" @{job.write_to_employer}"
+                        f" {job.write_to_employer}"
         return self.text
 
     def statistics(self, count, price, funds_spent, credit=None,

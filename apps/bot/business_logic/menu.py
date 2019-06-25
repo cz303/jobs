@@ -53,7 +53,6 @@ class Menu:
             'Поиск вакансий': self.search_vacancy,
             '#jobs': self.search_response,
             '✅ Опубликовать': self.publish,
-            '✅ Начать': self.start_send,
             'Оплатить в - USD(доллар)': self.pay,
         }
 
@@ -238,6 +237,12 @@ class Menu:
         markup = self.markup.my_score()
         self.send_message(text=text, reply_markup=markup)
 
+    def send_to(self, resumes, job):
+        # рассылка рабочим
+        for i in resumes:
+            text = self.text.send_resume(job)
+            self.send_message(user_id=i.user.user_id, text=text)
+
     def start_send(self, user, text):
         price = 0.02
         if float(user.credit) < price:
@@ -253,8 +258,7 @@ class Menu:
                 resumes = ResumeManager(user_id=self.user_id).search_resume(
                     city=job.city,
                     category=job.category,
-                    posistion=job.position
-                )
+                    posistion=job.position)
 
                 if not resumes:
                     text = self.text.not_jobs()
@@ -262,22 +266,21 @@ class Menu:
                 else:
                     text = self.text.start_send()
                     self.send_message(text=text)
-                    # рассылка рабочим
-                    for i in resumes:
-                        text = self.text.send_resume(job)
-                        self.send_message(user_id=i.user.user_id, text=text)
                     # сбор статистики
                     count = len(resumes)
                     funds_spent = count * price
                     sent = [i.user.user_id for i in resumes]
                     stat = StatisticsManager(user_id=user.id)
+
                     try:
                         free = stat.free_send()
                     except Statistics.DoesNotExist:
                         stat.create()
                         free = stat.free_send()
+
                     # перые 10 рассылок
                     st = stat.get()
+
                     if free > 0:
                         free_send = float(free) - count
                         text = self.text.statistics(
@@ -285,8 +288,9 @@ class Menu:
                             price=price,
                             funds_spent=funds_spent,
                             free_send_count=st.free_send - count,
-                            free_send=count
-                        )
+                            free_send=count)
+                        # рассылка рабочим
+                        self.send_to(resumes=resumes, job=job)
                         self.send_message(text=text)
                         stat.save(
                             count=float(st.count) + float(count),
@@ -294,38 +298,44 @@ class Menu:
                             price=price,
                             funds_spent=float(
                                 st.funds_spent) + float(funds_spent),
-                            free_send=free_send
-                        )
+                            free_send=free_send)
                     else:
                         # считаем баланс
                         balance = self.user.get_score()
                         credit = float(balance) - funds_spent
-                        # обновляем баланс
-                        self.user.update_credit(credit=credit)
-                        text = self.text.statistics(
-                            count=count,
-                            price=price,
-                            funds_spent=funds_spent,
-                            credit=credit
-                        )
-                        stat.save(
-                            count=float(st.count) + float(count),
-                            sent_to_users=sent,
-                            price=price,
-                            funds_spent=float(
-                                st.funds_spent) + float(funds_spent),
-                            free_send=0
-                        )
-                        self.send_message(text=text)
+
+                        if credit < 1 and credit < len(resumes):
+                            text = self.text.top_up_account(balance)
+                            self.send_message(text=text)
+                        else:
+                            # рассылка рабочим
+                            self.send_to(resumes=resumes, job=job)
+                            # обновляем баланс
+                            self.user.update_credit(credit=credit)
+                            text = self.text.statistics(
+                                count=count,
+                                price=price,
+                                funds_spent=funds_spent,
+                                credit=credit
+                            )
+                            stat.save(
+                                count=float(st.count) + float(count),
+                                sent_to_users=sent,
+                                price=price,
+                                funds_spent=float(
+                                    st.funds_spent) + float(funds_spent),
+                                free_send=0
+                            )
+                            self.send_message(text=text)
             except AssertionError:
                 pass
 
     def publish(self, user):
         text = self.text.publish(user)
-        markup = self.markup.publish()
         if user.profile == 1:
             JobManager(user_id=user.id).publish()
-            self.edit_message_text(text=text, reply_markup=markup)
+            self.edit_message_text(text=text)
+            self.start_send(user=user, text=text)
         else:
             ResumeManager(user_id=user.id).publish()
             self.send_message(text=text)
@@ -347,7 +357,7 @@ class Menu:
                        f'{job.city if job.city else "Отдаленная работа"}\n\n' \
                        f'<b>Опыт работы:</b> {job.experience}\n\n' \
                        f'<b>Описание вакансии:</b> {job.description}\n\n' \
-                       f'<b>Написать работодателю:</b> @{job.write_to_employer}'  # noqa
+                       f'<b>Написать работодателю:</b> {job.write_to_employer}'  # noqa
 
                 results.append(InlineQueryResultArticle(
                     id=job.id,

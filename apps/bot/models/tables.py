@@ -68,9 +68,9 @@ class CommonInfo(ICommonInfo):
     def reject(self):
         text = f"<b>❌ Ошибка!</b>\n{self.failure_reason}\n\n" \
             f"Исправь ошибку, которая указана выше," \
-            f" и создай вакансию заново, нажми кнопку 'Создать вакансию'.\n\n"\
+            f" и создай вакансию заново, нажми кнопку 'Создать вакансию'."\
             f"<a href='https://telegra.ph/file/98cad48a0b2343f710f96.jpg'>" \
-            f"&#160;</a>"
+            f"&#8205;</a>"
         requests.post(url=settings.URL,
                       data={f"chat_id": {str(self.user.user_id)},
                             "text": text,
@@ -97,10 +97,10 @@ class Job(CommonInfo):
             f' {self.city if self.city else "Отдаленная работа"}\n\n' \
             f'<b>Опыт работы:</b> {self.experience}\n\n' \
             f'<b>Описание вакансии:</b> {self.description}\n\n' \
-            f'<b>Написать работодателю:</b> @{self.write_to_employer}\n\n' \
+            f'<b>Написать работодателю:</b> {self.write_to_employer}' \
             f"<a href='https://" \
             f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
-            f"&#160;</a>"
+            f"&#8205;</a>"
         return requests.post(
             url=settings.URL,
             data={f"chat_id": {str(self.user.user_id)},
@@ -148,7 +148,7 @@ class Resume(CommonInfo):
             f'<b>О себе:</b> {self.description}' \
             f"<a href='https://" \
             f"telegra.ph/file/f03179992f64479dc4b20.jpg'>" \
-            f"&#160;</a>"
+            f"&#8205;</a>"
         return requests.post(
             url=settings.URL,
             data={

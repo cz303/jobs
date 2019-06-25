@@ -32,6 +32,7 @@ class Markup:
                         callback_data=callback_data or text,
                         url='https://t.me/share/url?url=https%3A//telegram'
                             '.me/RS_Work_bot'))
+                    return self.inline
                 elif text == 'Оплатить':
                     self.inline.add(InlineKeyboardButton(
                         text=text,
@@ -39,6 +40,7 @@ class Markup:
                         url=url
                     ))
                     return self.inline
+
                 self.inline.add(InlineKeyboardButton(text=text,
                                                      callback_data=text))
             return self.inline
