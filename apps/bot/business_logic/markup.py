@@ -207,7 +207,7 @@ class Markup:
         return self.send(texts, inline=True)
 
     def my_score(self):
-        texts = ['Оплатить в - USD(доллар)']
+        texts = ['Оплатить в: USD(доллар)']
         return self.send(texts, inline=True)
 
     @classmethod

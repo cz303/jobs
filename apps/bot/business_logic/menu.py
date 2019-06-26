@@ -53,7 +53,7 @@ class Menu:
             'Поиск вакансий': self.search_vacancy,
             '#jobs': self.search_response,
             '✅ Опубликовать': self.publish,
-            'Оплатить в - USD(доллар)': self.pay,
+            'Оплатить в: USD(доллар)': self.pay,
         }
 
     def send(self):
@@ -477,7 +477,10 @@ class Menu:
             markup = self.markup.my_vacations(vacations=vacations)
 
             if text and markup.keyboard:
-                self.send_message(text=text, reply_markup=markup)
+                try:
+                    self.edit_message_text(text=text, reply_markup=markup)
+                except ApiException:
+                    self.send_message(text=text, reply_markup=markup)
             else:
                 text = self.text.my_vacation_on_moderation()
                 self.send_message(text=text)
