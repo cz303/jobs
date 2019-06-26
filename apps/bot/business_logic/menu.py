@@ -354,7 +354,7 @@ class Menu:
         text = self.text.publish(user)
         if user.profile == 1:
             JobManager(user_id=user.id).publish()
-            self.edit_message_text(text=text)
+            self.send_message(text=text)
             self.start_send(user=user, text=text)
         else:
             ResumeManager(user_id=user.id).publish()
