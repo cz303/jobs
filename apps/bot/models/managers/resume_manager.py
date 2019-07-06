@@ -93,6 +93,9 @@ class ResumeManager(Manager):
         resume = Resume.objects.filter(
             user_id=self.user_id, publish=False
         ).order_by('timestamp').reverse().first()
-        resume.publish = True
-        resume.is_active = True
-        resume.save()
+        try:
+            resume.publish = True
+            resume.is_active = True
+            resume.save()
+        except AttributeError:
+            pass

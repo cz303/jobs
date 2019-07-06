@@ -9,7 +9,9 @@ class UserManager:
         self.user_id = user_id
         self.username = username
 
-    def create(self, profile=1):
+    def create(self, profile=None):
+        if not profile:
+            profile = 1
         try:
             User.objects.create(
                 user_id=self.user_id,
@@ -41,4 +43,9 @@ class UserManager:
     def update_credit(self, credit):
         user = User.objects.get(user_id=self.user_id)
         user.credit = credit
+        user.save()
+
+    def free_send(self):
+        user = User.objects.get(user_id=self.user_id)
+        user.free_send = True
         user.save()

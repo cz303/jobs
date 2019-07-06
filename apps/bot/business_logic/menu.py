@@ -17,6 +17,7 @@ from bot.models.managers.search_manager import SearchManager
 from bot.business_logic.liqpay import LiqPay
 from bot.models.managers.statistics_manager import StatisticsManager
 from bot.models.tables import Statistics
+from bot.models.managers.send_manager import SendManager
 
 
 class Menu:
@@ -54,6 +55,8 @@ class Menu:
             '#jobs': self.search_response,
             '✅ Опубликовать': self.publish,
             'Оплатить в: USD(доллар)': self.pay,
+            'Сделать рассылку': self.start_send,
+            '✅ Я согласен': self.complete_send,
         }
 
     def send(self):
@@ -61,7 +64,7 @@ class Menu:
         user = self.user.get_user()
 
         if not user:
-            return self.start_menu()
+            return self.start_menu(text=text, user=user)
 
         if isinstance(text, dict):
             return self.my_score(text=text)
@@ -69,13 +72,7 @@ class Menu:
         command = self.command_maps.get(text, None)
 
         if command:
-            try:
-                return command()
-            except TypeError:
-                try:
-                    return command(user=user)
-                except TypeError:
-                    return command(user=user, text=text)
+            return command(user=user, text=text)
 
         if text in self.markup.categories:
             self.send_sub_category(category=text, user=user)
@@ -119,6 +116,11 @@ class Menu:
 
             elif self.check_write_to_employer(user=user):
                 self.moderation(text=text, user=user)
+
+            # send to
+
+            elif self.check_start_send(user=user):
+                self.confirmation_send(user, text)
 
         # TODO: create resume
 
@@ -179,7 +181,7 @@ class Menu:
             elif self.check_search_category(user=user):
                 self.search_sub_category(user=user, text=text)
 
-        # TODO: Update or delete vacations
+        # TODO: Update or delete vacations or send
 
         if 'vacations' in text:
             self.view_vacations(user=user, text=text)
@@ -189,6 +191,9 @@ class Menu:
 
         elif 'v:del' in text:
             self.delete_vacations(user=user, text=text)
+
+        elif 'send:' in text:
+            self.found_candidates(user=user, text=text)
 
         # TODO: Update or delete resumes
 
@@ -224,7 +229,7 @@ class Menu:
             markup = self.markup.liq(url=res.get('href'))
             self.send_message(text=text, reply_markup=markup)
 
-    def pay(self):
+    def pay(self, user, text):
         text = self.text.pay()
         markup = self.markup.pay()
         self.edit_message_text(text=text, reply_markup=markup)
@@ -243,13 +248,61 @@ class Menu:
             text = self.text.send_resume(job)
             self.send_message(user_id=i.user.user_id, text=text)
 
+    def complete_send(self, user, text):
+        time.sleep(10)
+        text = self.text.complete_send()
+        self.send_message(text=text)
+
+    def confirmation_send(self, user, text):
+        count = int(text)
+        can = SendManager(user_id=user.id).candidates()
+        res = can.split(',')
+
+        if len(res) < count or count <= 0:
+            return self.send_message(text='Не верное число')
+
+        price = count * 0.02
+        balance = UserManager(user_id=self.user_id).get_score()
+
+        text = self.text.confirmation_send(text, price, balance)
+        markup = self.markup.confirmation_send()
+
+        SendManager.delete(user.id)
+        self.send_message(text=text, reply_markup=markup)
+
+    def check_start_send(self, user):
+        return SendManager(user_id=user.id).checker()
+
+    def found_candidates(self, user, text):
+        job_id = text.split('send:')[-1]
+        job = JobManager(user_id=user.id).job(job_id)
+
+        resumes = ResumeManager(
+            user_id=self.user_id
+        ).search_resume(
+            city=job.city,
+            category=job.category,
+            posistion=job.position)
+
+        if not resumes:
+            text = self.text.not_jobs()
+            return self.send_message(text=text)
+
+        resumes_ids = [i.id for i in resumes]
+        SendManager(user_id=user.id).create(job_id, *resumes_ids)
+
+        balance = UserManager(user_id=self.user_id).get_score()
+        text = self.text.found_candidates(len(resumes), balance)
+
+        self.send_message(text=text)
+
     def start_send(self, user, text):
         price = 0.02
         if float(user.credit) < price:
             text = self.text.top_up_account(balance=user.credit)
             markup = self.markup.my_score()
-            return self.send_message(text=text, reply_markup=markup)
-        else:
+            self.send_message(text=text, reply_markup=markup)
+
             # резюме которое будем рассылать
             job = JobManager(user_id=user.id).last_job()
 
@@ -330,17 +383,24 @@ class Menu:
             except AssertionError:
                 pass
 
-    def publish(self, user):
-        text = self.text.publish(user)
+    def publish(self, user, text):
         if user.profile == 1:
             JobManager(user_id=user.id).publish()
-            self.send_message(text=text)
-            self.start_send(user=user, text=text)
-        else:
-            ResumeManager(user_id=user.id).publish()
-            self.send_message(text=text)
 
-    def search_response(self, user):
+            if not user.free_send:
+                UserManager(user_id=user.id).free_send()
+                text = self.text.free_send()
+                return self.send_message(text=text)
+            else:
+                text = self.text.why_send()
+                return self.send_message(text=text)
+
+        elif user.profile == 2:
+            text = self.text.publish(user)
+            ResumeManager(user_id=user.id).publish()
+            return self.send_message(text=text)
+
+    def search_response(self, user, text):
         search = SearchManager(user_id=user.id).get()
         results = []
 
@@ -425,7 +485,7 @@ class Menu:
     def check_search_start(self, user):
         return DialogSearchManager(user_id=user.id).check_start()
 
-    def search_vacancy(self, user):
+    def search_vacancy(self, user, text):
         dialog = DialogSearchManager(user_id=user.id)
         dialog.clean()
         dialog.start()
@@ -469,7 +529,8 @@ class Menu:
         markup = self.markup.view_vacations(vacancy=vacancy)
         self.edit_message_text(text=text, reply_markup=markup)
 
-    def my_vacations(self, user):
+    def my_vacations(self, user, text):
+        SendManager.delete(user.id)
         vacations = JobManager(user_id=user.id).get_vacations()
 
         if vacations:
@@ -488,7 +549,7 @@ class Menu:
             text = self.text.my_vacation_on_moderation()
             self.send_message(text=text)
 
-    def my_resume(self, user):
+    def my_resume(self, user, text):
         resumes = ResumeManager(user_id=user.id).get_resume()
         if resumes:
             text = self.text.my_resume()
@@ -544,7 +605,7 @@ class Menu:
         text = self.text.moderation()
         self.send_message(text=text)
 
-    def where_to_find_username_link(self):
+    def where_to_find_username_link(self, user, text):
         text = self.text.where_to_find_username_link()
         self.send_message(text=text)
         time.sleep(3.0)
@@ -610,35 +671,35 @@ class Menu:
             switch_pm_text=f'Нашел [{len(results)}]'
         )
 
-    def start_menu(self):
+    def start_menu(self, user, text):
         self.user.create()
         text = self.text.start_menu()
         reply_markup = self.markup.start_menu()
         self.send_message(text=text, reply_markup=reply_markup)
 
-    def employer(self):
+    def employer(self, user, text):
         self.user.update_profile(profile=1)
         text = self.text.employer()
         reply_markup = self.markup.employer()
         self.send_message(text=text, reply_markup=reply_markup)
 
-    def worker(self):
+    def worker(self, user, text):
         self.user.update_profile(profile=2)
         text = self.text.worker()
         reply_markup = self.markup.worker()
         self.send_message(text=text, reply_markup=reply_markup)
 
-    def tell_friends(self):
+    def tell_friends(self, user, text):
         text = self.text.tell_friends()
         reply_markup = self.markup.tell_friends()
         self.send_message(text=text, reply_markup=reply_markup)
 
-    def how_we_are_working(self):
+    def how_we_are_working(self, user, text):
         user = self.user.get_user()
         text = self.text.how_we_are_working(profile=user.profile)
         self.send_message(text=text)
 
-    def send_categories(self, user):
+    def send_categories(self, user, text):
         if user.profile == 1:
             JobManager(user_id=user.id).clean()
             dialog = DialogJobManager(user_id=user.id)

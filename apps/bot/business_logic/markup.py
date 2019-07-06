@@ -79,7 +79,7 @@ class Markup:
             'Менеджер',
             'Рекрутер',
             'Инспектор',
-            'Специалист по обучению персонала',
+            'Специалист персонала',
             'Специалист по охране труда',
             'Психолог',
             'Инженер']
@@ -88,14 +88,14 @@ class Markup:
             'CEO | Product Manager',
             '​​​​​​​Java',
             'C# | .NET',
-            'JavaScript | Front-End | HTML',
+            'JavaScript',
             'Node.js',
             'PHP',
             'Python',
             'Ruby',
             'Android',
             'iOS | macOS',
-            'C | C++ | Embedded',
+            'C | C++',
             'Golang',
             'Scala',
             'Дизайнери | UI | UX',
@@ -184,7 +184,9 @@ class Markup:
         else:
             item = ('Удалить', f'v:del:{vacancy.id}')
 
-        data = [('◀️ Назад', 'v:return'), item]
+        data = [('◀️ Назад', 'v:return'),
+                ('Сделать рассылку', f'send:{vacancy.id}'),
+                item]
 
         return self.send(callback_data=data, inline=True)
 
@@ -229,4 +231,8 @@ class Markup:
 
     def experience(self):
         texts = ['Нет опыта', '1 год', '2 года', '3 года', '5 лет']
+        return self.send(texts=texts, inline=True)
+
+    def confirmation_send(self):
+        texts = ['✅ Я согласен']
         return self.send(texts=texts, inline=True)

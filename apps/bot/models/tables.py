@@ -6,6 +6,11 @@ import json
 from .exeptions import FailureReasonError
 
 
+def get_score(user_id):
+    user = User.objects.get(user_id=user_id)
+    return user.credit
+
+
 class User(models.Model):
     time = time()
     PROFILE = (
@@ -25,10 +30,21 @@ class User(models.Model):
     credit = models.CharField(max_length=255, default=0.00)
     profile = models.SmallIntegerField(choices=PROFILE)
     created = models.DateTimeField(auto_now=True, editable=False)
+    free_send = models.BooleanField(default=False)
     timestamp = models.IntegerField(default=time)
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        credit = get_score(self.user_id)
+        if float(self.credit) > float(credit):
+            text = f"✅ Оплата прошла успешно!"
+            requests.post(url=settings.URL,
+                          data={f"chat_id": {str(self.user_id)},
+                                "text": text,
+                                "parse_mode": "HTML"})
+        super().save(*args, **kwargs)
 
 
 class Moderation:
@@ -112,7 +128,7 @@ class Job(CommonInfo):
                             "callback_data": "✅ Опубликовать"}]]})})
 
     def save(self, *args, **kwargs):
-        if self.moderation == 2:
+        if self.moderation == 2 and not self.publish and not self.is_active:
             self.failure_reason = ''
             self.confirm()
         elif self.moderation == 3:
@@ -266,3 +282,9 @@ class Search(ICommonInfo):
     category = models.CharField(max_length=255, null=True)
     position = models.CharField(max_length=255, null=True)
     city = models.CharField(max_length=255, null=True)
+
+
+class SendDialog(ICommonInfo):
+    checker_start = models.BooleanField(default=False)
+    resume_id = models.IntegerField(null=True, blank=True)
+    candidates = models.TextField(max_length=2000, blank=True)

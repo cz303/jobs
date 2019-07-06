@@ -93,3 +93,6 @@ class JobManager(Manager):
             resume.publish = True
             resume.is_active = True
             resume.save()
+
+    def job(self, job_id):
+        return Job.objects.get(id=job_id)
