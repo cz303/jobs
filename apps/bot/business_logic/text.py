@@ -326,7 +326,7 @@ class Text:
                     f'вакансии, сделай оплату.💰\n' \
                     f'<b>1 рассылка = 2 цента</b>\n\n' \
                     f'<b>{balance}$</b><a href="https://' \
-                    f'telegra.ph/file/4539f1c1b87659d4f66ee.jpg">&#8205;</a>'
+                    f'telegra.ph/file/a95582839314e44a6fcc1.jpg">&#8205;</a>'
         return self.text
 
     def not_jobs(self):
