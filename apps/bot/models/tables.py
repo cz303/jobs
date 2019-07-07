@@ -301,3 +301,4 @@ class SendDialog(ICommonInfo):
     checker_start = models.BooleanField(default=False)
     resume_id = models.IntegerField(null=True, blank=True)
     candidates = models.TextField(max_length=2000, blank=True)
+    count = models.IntegerField(default=0)

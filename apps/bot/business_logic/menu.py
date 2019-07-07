@@ -246,10 +246,12 @@ class Menu:
         # рассылка рабочим
         for candidate in candidates:
             text = self.text.send_resume(job)
-            self.send_message(user_id=candidate, text=text)
+            try:
+                self.send_message(user_id=candidate, text=text)
+            except ApiException as error:
+                print(str(error))
 
     def complete_send(self, user, text):
-        # time.sleep(10)
         send = SendManager(user_id=user.id).sender()
 
         if not send:
@@ -261,11 +263,15 @@ class Menu:
         candidate = candidate.replace(']', '')
         candidate = candidate.split(',')
 
-        self.send_to(candidate, job)
-
         # update balance
-        credit = float(user.credit) - (float(len(candidate)) * 0.02)
+        credit = float(user.credit) - (float(send.count) * 0.02)
+
+        if credit <= 0:
+            return self.send_message(text='недостаточно средств')
+
         UserManager(user_id=self.user_id).update_credit(credit=credit)
+
+        self.send_to(candidate[:send.count], job)
 
         SendManager.delete(user.id)
         text = self.text.complete_send()
@@ -273,7 +279,8 @@ class Menu:
 
     def confirmation_send(self, user, text):
         count = int(text)
-        can = SendManager(user_id=user.id).candidates()
+        sender = SendManager(user_id=user.id)
+        can = sender.candidates()
         res = can.split(',')
 
         if len(res) < count or count <= 0:
@@ -281,6 +288,7 @@ class Menu:
 
         price = count * 0.02
         balance = UserManager(user_id=self.user_id).get_score()
+        sender.count(count)
 
         text = self.text.confirmation_send(text, price, balance)
         markup = self.markup.confirmation_send()
@@ -506,7 +514,7 @@ class Menu:
 
         DialogSearchManager(user_id=user.id).update_city()
 
-        self.send_categories(user=user)
+        self.send_categories(user=user, text='')
 
     def check_search_start(self, user):
         return DialogSearchManager(user_id=user.id).check_start()

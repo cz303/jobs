@@ -33,3 +33,8 @@ class SendManager(Manager):
             return SendDialog.objects.get(user_id=self.user_id)
         except SendDialog.DoesNotExist as error:
             print(str(error))
+
+    def count(self, count):
+        can = SendDialog.objects.get(user_id=self.user_id)
+        can.count = count
+        can.save()
