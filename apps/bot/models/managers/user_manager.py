@@ -7,7 +7,7 @@ __all__ = ('UserManager',)
 class UserManager:
     def __init__(self, user_id, username=None):
         self.user_id = user_id
-        self.username = username or ''
+        self.username = username
 
     def create(self, profile=None):
         if not profile:
@@ -15,7 +15,7 @@ class UserManager:
         try:
             User.objects.create(
                 user_id=self.user_id,
-                username=self.username,
+                username=self.username or 'Username undefined',
                 profile=profile)
         except IntegrityError as error:
             print(f'There is such := {error}')
