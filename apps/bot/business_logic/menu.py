@@ -289,7 +289,7 @@ class Menu:
             return self.send_message(text=text)
 
         resumes_ids = [i.id for i in resumes]
-        SendManager(user_id=user.id).create(job_id, *resumes_ids)
+        SendManager(user_id=user.id).create(job_id, resumes_ids)
 
         balance = UserManager(user_id=self.user_id).get_score()
         text = self.text.found_candidates(len(resumes), balance)
