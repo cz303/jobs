@@ -48,6 +48,15 @@ class User(models.Model):
                           data={f"chat_id": {str(self.user_id)},
                                 "text": text,
                                 "parse_mode": "HTML"})
+            text = '<b>Как сделать рассылку вакансии?</b>\nЖми в меню' \
+                   ' кнопку "Мои вакансии", вибери вакансию которую хочешь' \
+                   ' разослать пользователям. В выбранной вакансии жми' \
+                   ' кнопку "Сделать рассылку".<a href="https://' \
+                   'telegra.ph/file/bf4a40c5d54b8330b2424.jpg">&#8205;</a>'
+            requests.post(url=settings.URL,
+                          data={f"chat_id": {str(self.user_id)},
+                                "text": text,
+                                "parse_mode": "HTML"})
         super().save(*args, **kwargs)
 
 
