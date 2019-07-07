@@ -242,14 +242,28 @@ class Menu:
         markup = self.markup.my_score()
         self.send_message(text=text, reply_markup=markup)
 
-    def send_to(self, resumes, job):
+    def send_to(self, candidates, job):
         # рассылка рабочим
-        for i in resumes:
+        for candidate in candidates:
             text = self.text.send_resume(job)
-            self.send_message(user_id=i.user.user_id, text=text)
+            self.send_message(user_id=candidate, text=text)
 
     def complete_send(self, user, text):
-        time.sleep(10)
+        # time.sleep(10)
+        send = SendManager(user_id=user.id).sender()
+        job = JobManager(user_id=user.id).job(send.resume_id)
+
+        candidate = send.candidates.replace('[', '')
+        candidate = candidate.replace(']', '')
+        candidate = candidate.split(',')
+
+        self.send_to(candidate, job)
+
+        # update balance
+        credit = float(user.credit) - (float(len(candidate)) * 0.02)
+        UserManager(user_id=self.user_id).update_credit(credit=credit)
+
+        SendManager.delete(user.id)
         text = self.text.complete_send()
         self.send_message(text=text)
 
@@ -266,8 +280,6 @@ class Menu:
 
         text = self.text.confirmation_send(text, price, balance)
         markup = self.markup.confirmation_send()
-
-        SendManager.delete(user.id)
         self.send_message(text=text, reply_markup=markup)
 
     def check_start_send(self, user):
@@ -288,8 +300,8 @@ class Menu:
             text = self.text.not_jobs()
             return self.send_message(text=text)
 
-        resumes_ids = [i.id for i in resumes]
-        SendManager(user_id=user.id).create(job_id, resumes_ids)
+        candidates = [i.user.user_id for i in resumes]
+        SendManager(user_id=user.id).create(job_id, candidates)
 
         balance = UserManager(user_id=self.user_id).get_score()
         text = self.text.found_candidates(len(resumes), balance)

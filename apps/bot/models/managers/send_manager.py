@@ -4,11 +4,11 @@ from bot.models.tables import SendDialog
 
 class SendManager(Manager):
 
-    def create(self, job_id, resumes_ids):
+    def create(self, job_id, candidates):
         return SendDialog.objects.create(
             user_id=self.user_id,
             checker_start=True,
-            candidates=resumes_ids,
+            candidates=candidates,
             resume_id=job_id)
 
     def checker(self):
@@ -27,3 +27,7 @@ class SendManager(Manager):
             SendDialog.objects.get(user_id=user_id).delete()
         except SendDialog.DoesNotExist as error:
             print(str(error))
+
+    def sender(self):
+        sender = SendDialog.objects.get(user_id=self.user_id)
+        return sender
