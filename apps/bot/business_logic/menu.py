@@ -251,6 +251,10 @@ class Menu:
     def complete_send(self, user, text):
         # time.sleep(10)
         send = SendManager(user_id=user.id).sender()
+
+        if not send:
+            return self.send_message(text='резюме не найдено')
+
         job = JobManager(user_id=user.id).job(send.resume_id)
 
         candidate = send.candidates.replace('[', '')

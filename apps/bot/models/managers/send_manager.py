@@ -29,5 +29,7 @@ class SendManager(Manager):
             print(str(error))
 
     def sender(self):
-        sender = SendDialog.objects.get(user_id=self.user_id)
-        return sender
+        try:
+            return SendDialog.objects.get(user_id=self.user_id)
+        except SendDialog.DoesNotExist as error:
+            print(str(error))
