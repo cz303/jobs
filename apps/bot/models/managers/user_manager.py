@@ -46,6 +46,6 @@ class UserManager:
         user.save()
 
     def free_send(self):
-        user = User.objects.get(user_id=self.user_id)
+        user = User.objects.get(id=self.user_id)
         user.free_send = True
         user.save()
