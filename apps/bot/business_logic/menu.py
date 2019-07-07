@@ -678,8 +678,7 @@ class Menu:
             next_offset='',
             switch_pm_parameter='jobs',
             is_personal=True,
-            switch_pm_text=f'Нашел [{len(results)}]'
-        )
+            switch_pm_text=f'Нашел [{len(results)}]')
 
     def start_menu(self, user, text):
         self.user.create()
