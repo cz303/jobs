@@ -8,7 +8,8 @@ set_web_hook = SetWebHook()
 
 class BotJobsView(View):
     def post(self, request):
-        bot = set_web_hook.bot
-        Menu(request=request, bot=bot).send()
-
-        return HttpResponse(status=200)
+        try:
+            bot = set_web_hook.bot
+            Menu(request=request, bot=bot).send()
+        finally:
+            return HttpResponse(status=200)
