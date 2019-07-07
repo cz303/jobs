@@ -23,6 +23,7 @@ class User(Schema):
 
 class Chat(Schema):
     first_name = fields.String()
+    last_name = fields.Str()
     id = fields.Integer()
     type = fields.String()
     username = fields.String()
