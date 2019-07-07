@@ -7,7 +7,7 @@ __all__ = ('UserManager',)
 class UserManager:
     def __init__(self, user_id, username=None):
         self.user_id = user_id
-        self.username = username
+        self.username = username or ''
 
     def create(self, profile=None):
         if not profile:
