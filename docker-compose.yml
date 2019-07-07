@@ -77,6 +77,7 @@ services:
     depends_on:
       - db
       - redis
+
   redis:
     container_name: sentry-redis
     image: redis
@@ -85,21 +86,9 @@ services:
     ports:
       - '6379:6379'
 
-  db:
-    container_name: sentry-postgres
-    image: postgres
-    environment:
-      POSTGRES_USER: sentry
-      POSTGRES_PASSWORD: secret
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
-
 volumes:
   certs:
   redis-data:
-  pg-data:
 
 networks:
   jobs_network:
