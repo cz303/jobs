@@ -15,7 +15,7 @@ class UserManager:
         try:
             User.objects.create(
                 user_id=self.user_id,
-                username=self.username or 'Username undefined',
+                username=self.username or 'Неопознаный суслик',
                 profile=profile)
         except IntegrityError as error:
             print(f'There is such := {error}')
