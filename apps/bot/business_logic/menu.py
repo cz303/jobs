@@ -390,15 +390,25 @@ class Menu:
             if not user.free_send:
                 UserManager(user_id=user.id).free_send()
                 text = self.text.free_send()
-                return self.send_message(text=text)
-            else:
-                text = self.text.why_send()
-                return self.send_message(text=text)
+                self.send_message(text=text)
 
+                time.sleep(5.0)
+                text = self.text.top_up_account(balance=user.credit)
+                markup = self.markup.my_score()
+                self.send_message(text=text, reply_markup=markup)
+            else:
+                price = 0.02
+                if float(user.credit) < price:
+                    text = self.text.top_up_account(balance=user.credit)
+                    markup = self.markup.my_score()
+                    self.send_message(text=text, reply_markup=markup)
+                else:
+                    text = self.text.why_send()
+                    self.send_message(text=text)
         elif user.profile == 2:
             text = self.text.publish(user)
             ResumeManager(user_id=user.id).publish()
-            return self.send_message(text=text)
+            self.send_message(text=text)
 
     def search_response(self, user, text):
         search = SearchManager(user_id=user.id).get()
