@@ -15,6 +15,7 @@ __all__ = (
 
 class User(Schema):
     first_name = fields.String()
+    last_name = fields.Str()
     id = fields.Integer()
     is_bot = fields.Boolean()
     language_code = fields.String()
