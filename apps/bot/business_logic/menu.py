@@ -246,8 +246,10 @@ class Menu:
         # рассылка рабочим
         for candidate in candidates:
             text = self.text.send_resume(job)
+            time.sleep(2)
+
             try:
-                self.send_message(user_id=candidate, text=text)
+                self.send_message(user_id=int(candidate), text=text)
             except ApiException as error:
                 print(str(error))
 
