@@ -204,7 +204,7 @@ class Resume(CommonInfo):
         )
 
     def save(self, *args, **kwargs):
-        if self.moderation == 2:
+        if self.moderation == 2 and not self.publish and not self.is_active:
             self.failure_reason = ''
             self.confirm()
         elif self.moderation == 3:

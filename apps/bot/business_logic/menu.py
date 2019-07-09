@@ -592,7 +592,10 @@ class Menu:
             markup = self.markup.my_resume(resumes=resumes)
 
             if text and markup.keyboard:
-                self.send_message(text=text, reply_markup=markup)
+                try:
+                    self.edit_message_text(text=text, reply_markup=markup)
+                except ApiException:
+                    self.send_message(text=text, reply_markup=markup)
             else:
                 text = self.text.my_resume_on_moderation()
                 self.send_message(text=text)
@@ -604,7 +607,8 @@ class Menu:
         ResumeManager(user_id=user.id).update_age(age=text)
         DialogResumeManager(user_id=user.id).city()
         text = self.text.work_city()
-        self.send_message(text=text)
+        markup = self.markup.city()
+        self.send_message(text=text, reply_markup=markup)
 
     def check_work_city(self, user):
         return DialogResumeManager(user_id=user.id).check_city()

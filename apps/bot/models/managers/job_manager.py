@@ -57,15 +57,20 @@ class JobManager(Manager):
         job.save()
 
     def get_vacations(self, params=None):
-        if params:
-            job = Job.objects.filter(user_id=self.user_id).filter(
-                city=params.city,
+        if params.city == 'Отдалённая работа':
+            job = Job.objects.filter(
+                user_id=self.user_id,
                 category=params.category,
-                position=params.position
+                position=params.position,
+                remote=True
             ).order_by('timestamp')
         else:
             job = Job.objects.filter(
-                user_id=self.user_id).order_by('timestamp')
+                user_id=self.user_id,
+                category=params.category,
+                position=params.position,
+                city=params.city
+            ).order_by('timestamp')
         return job
 
     def last_job(self):
