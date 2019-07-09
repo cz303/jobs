@@ -299,6 +299,7 @@ class Text:
         return self.text
 
     def my_score(self, balance):
+        balance = round(balance, 2)
         self.text = '<b>Мой счёт!</b>\nЧтобы начать продвижение ' \
                     'твоей вакансии, на счету должно быть' \
                     ' минимум 0.02$\n1 рассылка = 2 цента\n\n💰<b>' \
@@ -394,6 +395,7 @@ class Text:
         return self.text
 
     def confirmation_send(self, can, price, balance):
+        balance = round(balance, 2)
         self.text = f'<b>Делаю рассылку {can} кандидатам!</b>\n' \
                     f'Цена рассылки: {price}$\n\n' \
                     f'💰<b>{balance}$</b><a href="https://' \

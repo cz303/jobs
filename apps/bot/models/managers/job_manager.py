@@ -63,12 +63,15 @@ class JobManager(Manager):
                 position=params.position,
                 remote=True
             ).order_by('timestamp')
-        else:
+        elif params.city:
             job = Job.objects.filter(
                 category=params.category,
                 position=params.position,
                 city=params.city
             ).order_by('timestamp')
+        else:
+            job = Job.objects.filter(
+                user_id=self.user_id).order_by('timestamp')
         return job
 
     def last_job(self):
