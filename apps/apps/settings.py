@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0drgi@(c=!f)l9(0+$v)75ii_0e$&!b9!z=drg56$a)f&gjld+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 HOST = os.environ.get('HOST', 'robosapiens.icu')
 
