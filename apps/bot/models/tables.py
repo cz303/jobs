@@ -139,7 +139,7 @@ class Job(CommonInfo):
                   "reply_markup": json.dumps(
                       {"inline_keyboard": [
                           [{"text": "✅ Опубликовать",
-                            "callback_data": "✅ Опубликовать"}]]})})
+                            "callback_data": f"free:{self.id}"}]]})})
 
     def save(self, *args, **kwargs):
         if self.moderation == 2 and not self.publish and not self.is_active:

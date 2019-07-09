@@ -206,6 +206,11 @@ class Menu:
         elif 'r:del' in text:
             self.delete_resume(user=user, text=text)
 
+        # todo: publish free send
+
+        if 'free:' in text:
+            self.publish(user=user, text=text)
+
     def redirect_to_liq(self, text, user):
         amount = text.split()[1]
         liq_pay = LiqPay(settings.PUBLIC_KEY, settings.PRIVATE_KEY)
@@ -418,7 +423,23 @@ class Menu:
                 text = self.text.free_send()
                 self.send_message(text=text)
 
-                time.sleep(5.0)
+                job_id = text.split('send:')[-1]
+                job = JobManager(user_id=user.id).job(job_id)
+
+                resumes = ResumeManager(
+                    user_id=self.user_id
+                ).search_resume(
+                    city=job.city,
+                    category=job.category,
+                    posistion=job.position)
+
+                if not resumes:
+                    text = self.text.not_jobs()
+                    return self.send_message(text=text)
+
+                candidates = [i.user.user_id for i in resumes]
+                self.send_to(candidates[:10], job)
+
                 text = self.text.top_up_account(balance=user.credit)
                 markup = self.markup.my_score()
                 self.send_message(text=text, reply_markup=markup)
