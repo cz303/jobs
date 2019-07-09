@@ -1,5 +1,5 @@
 from django.db import models
-from time import time
+from time import time, sleep
 import requests
 from django.conf import settings
 import json
@@ -48,6 +48,7 @@ class User(models.Model):
                           data={f"chat_id": {str(self.user_id)},
                                 "text": text,
                                 "parse_mode": "HTML"})
+            sleep(2.0)
             text = '<b>Как сделать рассылку вакансии?</b>\nЖми в меню' \
                    ' кнопку "Мои вакансии", вибери вакансию которую хочешь' \
                    ' разослать пользователям. В выбранной вакансии жми' \
