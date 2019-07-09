@@ -389,7 +389,8 @@ class Text:
     def found_candidates(self, candidates, balance):
         self.text = f'<b>Найдено {candidates} кандидатов.</b>\n\n' \
                     f'Напиши числом, скольким кандидатам сделать рассылку?\n' \
-                    f'1 рассылка = 2 цента\n\n💰<b>{balance}$</b>' \
+                    f'1 рассылка = 2 цента\n\n💰<b>' \
+                    f'{round(float(balance), 2)}$</b>' \
                     f'<a href="https://' \
                     'telegra.ph/file/22bce89e5ee8c1f25806c.jpg">&#8205;</a>'
         return self.text
