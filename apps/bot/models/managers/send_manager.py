@@ -23,10 +23,7 @@ class SendManager(Manager):
 
     @classmethod
     def delete(cls, user_id):
-        try:
-            SendDialog.objects.get(user_id=user_id).delete()
-        except SendDialog.DoesNotExist as error:
-            print(str(error))
+        SendDialog.objects.filter(user_id=user_id).delete()
 
     def sender(self):
         try:
