@@ -74,6 +74,9 @@ class Menu:
         if command:
             return command(user=user, text=text)
 
+        if 'free:' in text:
+            self.publish(user=user, text=text)
+
         if text in self.markup.categories:
             self.send_sub_category(category=text, user=user)
 
@@ -205,11 +208,6 @@ class Menu:
 
         elif 'r:del' in text:
             self.delete_resume(user=user, text=text)
-
-        # todo: publish free send
-
-        if 'free:' in text:
-            self.publish(user=user, text=text)
 
     def redirect_to_liq(self, text, user):
         amount = text.split()[1]
