@@ -279,7 +279,7 @@ class Text:
         self.text = '<b>Выбери город!</b>\nВ каком городе ты ищешь вакансию?' \
                     ' Напиши правильно название своего города, или нажми' \
                     ' кнопку отдалённая работа.<a href="https://' \
-                    'telegra.ph/file/7a42d93fa89138074d3f7.jpg">&#8205;</a>'
+                    'telegra.ph/file/a316fb315bc81d9191e85.jpg">&#8205;</a>'
         return self.text
 
     def publish(self, user):
