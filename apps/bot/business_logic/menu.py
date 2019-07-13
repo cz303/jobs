@@ -59,6 +59,15 @@ class Menu:
             '✅ Я согласен': self.complete_send,
         }
 
+    @classmethod
+    def _clean(cls, user):
+        DialogSearchManager(user_id=user.id).clean()
+        SearchManager(user_id=user.id).clean()
+        JobManager(user_id=user.id).clean()
+        DialogJobManager(user_id=user.id).clean()
+        DialogResumeManager(user_id=user.id).clean()
+        ResumeManager(user_id=user.id).clean()
+
     def send(self):
         text = self.parser.text()
         user = self.user.get_user()
@@ -75,139 +84,137 @@ class Menu:
             return command(user=user, text=text)
 
         if 'free:' in text:
-            self.publish(user=user, text=text)
+            return self.publish(user=user, text=text)
 
         if text in self.markup.categories:
-            self.send_sub_category(category=text, user=user)
+            return self.send_sub_category(category=text, user=user)
 
         if text in self.markup.pay_buttons():
-            self.redirect_to_liq(text=text, user=user)
+            return self.redirect_to_liq(text=text, user=user)
+
+        if 'vacations' in text:
+            return self.view_vacations(user=user, text=text)
+
+        elif 'v:update' in text:
+            return self.update_vacations(user=user, text=text)
+
+        elif 'v:del' in text:
+            return self.delete_vacations(user=user, text=text)
+
+        elif 'send:' in text:
+            return self.found_candidates(user=user, text=text)
+
+        # TODO: Update or delete resumes
+
+        if 'resumes' in text:
+            return self.view_resume(user=user, text=text)
+
+        elif 'r:update' in text:
+            return self.update_resume(user=user, text=text)
+
+        elif 'r:del' in text:
+            return self.delete_resume(user=user, text=text)
 
         # TODO: create job
 
         if user.profile == 1:
 
             if text in self.markup.get_sub_categories:
-                self.looking_for(position=text, user=user)
+                return self.looking_for(position=text, user=user)
 
             # First step
 
             elif self.check_looking_for(user=user):
-                self.wage(text=text, user=user)
+                return self.wage(text=text, user=user)
 
             # Second step
 
             elif self.check_wage(user=user):
-                self.city(text=text, user=user)
+                return self.city(text=text, user=user)
 
             # Three step
 
             elif self.check_city(user=user):
-                self.experience(text=text, user=user)
+                return self.experience(text=text, user=user)
 
             # Four step
 
             elif self.check_experience(user=user):
-                self.description(text=text, user=user)
+                return self.description(text=text, user=user)
 
             # Five step
 
             elif self.check_description(user=user):
-                self.write_to_employer(text=text, user=user)
+                return self.write_to_employer(text=text, user=user)
 
             # Six step final create job send to moderation
 
             elif self.check_write_to_employer(user=user):
-                self.moderation(text=text, user=user)
+                return self.moderation(text=text, user=user)
 
             # send to
 
             elif self.check_start_send(user=user):
-                self.confirmation_send(user, text)
+                return self.confirmation_send(user, text)
 
         # TODO: create resume
 
         elif user.profile == 2:
 
             if text in self.markup.get_sub_categories:
-                self.name(position=text, user=user)
+                return self.name(position=text, user=user)
 
             # First step
 
             elif self.check_name(user=user):
-                self.age(text=text, user=user)
+                return self.age(text=text, user=user)
 
             # Second step
 
             elif self.check_age(user=user):
-                self.work_city(text=text, user=user)
+                return self.work_city(text=text, user=user)
 
             # Three step
 
             elif self.check_work_city(user=user):
-                self.lang(text=text, user=user)
+                return self.lang(text=text, user=user)
 
             # Four step
 
             elif self.check_lang(user=user):
-                self.work_experience(text=text, user=user)
+                return self.work_experience(text=text, user=user)
 
             # Five step
 
             elif self.check_work_experience(user=user):
-                self.education(text=text, user=user)
+                return self.education(text=text, user=user)
 
             # Six step
 
             elif self.check_education(user=user):
-                self.work_description(text=text, user=user)
+                return self.work_description(text=text, user=user)
 
             # Seven step final create resume
 
             elif self.check_work_description(user=user):
-                self.work_moderation(text=text, user=user)
+                return self.work_moderation(text=text, user=user)
 
             # TODO: Search resume
 
             # First step
 
             if self.check_search_start(user=user):
-                self.search_city(user=user, text=text)
+                return self.search_city(user=user, text=text)
 
             # Second step
 
             elif self.check_search_city(user=user):
-                self.search_category(user=user, text=text)
+                return self.search_category(user=user, text=text)
 
             # Three step
 
             elif self.check_search_category(user=user):
-                self.search_sub_category(user=user, text=text)
-
-        # TODO: Update or delete vacations or send
-
-        if 'vacations' in text:
-            self.view_vacations(user=user, text=text)
-
-        elif 'v:update' in text:
-            self.update_vacations(user=user, text=text)
-
-        elif 'v:del' in text:
-            self.delete_vacations(user=user, text=text)
-
-        elif 'send:' in text:
-            self.found_candidates(user=user, text=text)
-
-        # TODO: Update or delete resumes
-
-        if 'resumes' in text:
-            self.view_resume(user=user, text=text)
-
-        elif 'r:update' in text:
-            self.update_resume(user=user, text=text)
-
-        elif 'r:del' in text:
-            self.delete_resume(user=user, text=text)
+                return self.search_sub_category(user=user, text=text)
 
     def redirect_to_liq(self, text, user):
         amount = text.split()[1]
@@ -223,19 +230,19 @@ class Menu:
             self.send_message(text=text)
 
             time.sleep(3)
-            self.start_menu()
+            return self.start_menu(user=user, text=text)
 
         elif res['status'] == 'invoice_wait':
             money = text.split()[1]
             value = text.split()[2]
             text = self.text.liq(count=money, value=value)
             markup = self.markup.liq(url=res.get('href'))
-            self.send_message(text=text, reply_markup=markup)
+            return self.send_message(text=text, reply_markup=markup)
 
     def pay(self, user, text):
         text = self.text.pay()
         markup = self.markup.pay()
-        self.edit_message_text(text=text, reply_markup=markup)
+        return self.edit_message_text(text=text, reply_markup=markup)
 
     def my_score(self, text):
         user = UserManager(user_id=self.user_id)
@@ -243,7 +250,7 @@ class Menu:
         balance = user.get_score()
         text = self.text.my_score(balance)
         markup = self.markup.my_score()
-        self.send_message(text=text, reply_markup=markup)
+        return self.send_message(text=text, reply_markup=markup)
 
     def send_to(self, candidates, job):
         # рассылка рабочим
@@ -280,7 +287,7 @@ class Menu:
 
         SendManager.delete(user.id)
         text = self.text.complete_send()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def confirmation_send(self, user, text):
         count = int(text)
@@ -297,7 +304,7 @@ class Menu:
 
         text = self.text.confirmation_send(text, price, balance)
         markup = self.markup.confirmation_send()
-        self.send_message(text=text, reply_markup=markup)
+        return self.send_message(text=text, reply_markup=markup)
 
     def check_start_send(self, user):
         return SendManager(user_id=user.id).checker()
@@ -323,7 +330,7 @@ class Menu:
         balance = UserManager(user_id=self.user_id).get_score()
         text = self.text.found_candidates(len(resumes), balance)
 
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def start_send(self, user, text):
         price = 0.02
@@ -356,7 +363,8 @@ class Menu:
 
                     try:
                         free = stat.free_send()
-                    except Statistics.DoesNotExist:
+                    except Statistics.DoesNotExist as error:
+                        print(str(error))
                         stat.create()
                         free = stat.free_send()
 
@@ -409,19 +417,18 @@ class Menu:
                                 free_send=0
                             )
                             self.send_message(text=text)
-            except AssertionError:
-                pass
+            except AssertionError as error:
+                print(str(error))
 
     def publish(self, user, text):
         if user.profile == 1:
             JobManager(user_id=user.id).publish()
 
             if not user.free_send:
-                UserManager(user_id=user.id).free_send()
-                text = self.text.free_send()
-                self.send_message(text=text)
+                _text = self.text.free_send()
+                self.send_message(text=_text)
 
-                job_id = text.split('send:')[-1]
+                job_id = text.split('free:')[-1]
                 job = JobManager(user_id=user.id).job(job_id)
 
                 resumes = ResumeManager(
@@ -435,25 +442,28 @@ class Menu:
                     text = self.text.not_jobs()
                     return self.send_message(text=text)
 
-                candidates = [i.user.user_id for i in resumes]
+                candidates = [i.user.user_id for i in resumes if
+                              i.user.user_id != self.user_id]
                 self.send_to(candidates[:10], job)
+
+                UserManager(user_id=user.id).free_send()
 
                 text = self.text.top_up_account(balance=user.credit)
                 markup = self.markup.my_score()
-                self.send_message(text=text, reply_markup=markup)
+                return self.send_message(text=text, reply_markup=markup)
             else:
                 price = 0.02
                 if float(user.credit) < price:
                     text = self.text.top_up_account(balance=user.credit)
                     markup = self.markup.my_score()
-                    self.send_message(text=text, reply_markup=markup)
+                    return self.send_message(text=text, reply_markup=markup)
                 else:
                     text = self.text.why_send()
-                    self.send_message(text=text)
+                    return self.send_message(text=text)
         elif user.profile == 2:
             text = self.text.publish(user)
             ResumeManager(user_id=user.id).publish()
-            self.send_message(text=text)
+            return self.send_message(text=text)
 
     def search_response(self, user, text):
         search = SearchManager(user_id=user.id).get()
@@ -485,7 +495,7 @@ class Menu:
                     thumb_width=30,
                     reply_markup=markup))
         if results:
-            self.answer_inline_query(results=results)
+            return self.answer_inline_query(results=results)
 
     def search_sub_category(self, user, text):
         position = text.split(':')[-1]
@@ -505,9 +515,9 @@ class Menu:
 
         text = f'<b>Ты выбрал!\n</b>Категорию: {search.category}\n'\
                f'Должность: {search.position}<a href="https:' \
-               f'//telegra.ph/file/bb8803646002d244de091.jpg">&#160;</a>'
+               f'//">&#160;</a>'
 
-        self.edit_message_text(text=text, reply_markup=markup)
+        return self.edit_message_text(text=text, reply_markup=markup)
 
     def search_category(self, user, text):
         category = text.split(':')[-1]
@@ -515,7 +525,7 @@ class Menu:
         SearchManager(user_id=user.id).update_category(category=category)
         DialogSearchManager(user_id=user.id).update_category()
 
-        self.send_sub_category(user=user, category=category)
+        return self.send_sub_category(user=user, category=category)
 
     def check_search_category(self, user):
         return DialogSearchManager(user_id=user.id).check_category()
@@ -535,7 +545,7 @@ class Menu:
 
         DialogSearchManager(user_id=user.id).update_city()
 
-        self.send_categories(user=user, text='')
+        return self.send_categories(user=user, text='')
 
     def check_search_start(self, user):
         return DialogSearchManager(user_id=user.id).check_start()
@@ -546,17 +556,17 @@ class Menu:
         dialog.start()
         text = self.text.search_vacancy()
         markup = self.markup.search_vacancy()
-        self.send_message(text=text, reply_markup=markup)
+        return self.send_message(text=text, reply_markup=markup)
 
     def delete_resume(self, user, text):
         resume_id = text.split(':')[-1]
         ResumeManager(user_id=user.id).delete_resume(resume_id=resume_id)
-        self.my_resume(user=user)
+        return self.my_resume(user=user)
 
     def update_resume(self, user, text):
         resume_id = text.split(':')[-1]
         ResumeManager(user_id=user.id).update_resume(resume_id=resume_id)
-        self.view_resume(user=user, text=text)
+        return self.view_resume(user=user, text=text)
 
     def view_resume(self, user, text):
         resume_id = text.split(':')[-1]
@@ -564,17 +574,17 @@ class Menu:
             user_id=user.id).get_resume_for_id(resume_id=resume_id)
         text = self.text.view_resume(resume=resume)
         markup = self.markup.view_resume(resume=resume)
-        self.edit_message_text(text=text, reply_markup=markup)
+        return self.edit_message_text(text=text, reply_markup=markup)
 
     def delete_vacations(self, user, text):
         vacation_id = text.split(':')[-1]
         JobManager(user_id=user.id).delete_vacations(vacation_id=vacation_id)
-        self.my_vacations(user=user)
+        return self.my_vacations(user=user)
 
     def update_vacations(self, user, text):
         vacation_id = text.split(':')[-1]
         JobManager(user_id=user.id).update_vacations(vacation_id=vacation_id)
-        self.view_vacations(user=user, text=text)
+        return self.view_vacations(user=user, text=text)
 
     def view_vacations(self, user, text):
         vacation_id = text.split(':')[-1]
@@ -582,7 +592,7 @@ class Menu:
             user_id=user.id).get_vacation_for_id(vacation_id=vacation_id)
         text = self.text.view_vacations(vacancy=vacancy)
         markup = self.markup.view_vacations(vacancy=vacancy)
-        self.edit_message_text(text=text, reply_markup=markup)
+        return self.edit_message_text(text=text, reply_markup=markup)
 
     def my_vacations(self, user, text):
         SendManager.delete(user.id)
@@ -595,7 +605,8 @@ class Menu:
             if text and markup.keyboard:
                 try:
                     self.edit_message_text(text=text, reply_markup=markup)
-                except ApiException:
+                except ApiException as error:
+                    print(str(error))
                     self.send_message(text=text, reply_markup=markup)
             else:
                 text = self.text.my_vacation_on_moderation()
@@ -613,7 +624,8 @@ class Menu:
             if text and markup.keyboard:
                 try:
                     self.edit_message_text(text=text, reply_markup=markup)
-                except ApiException:
+                except ApiException as error:
+                    print(str(error))
                     self.send_message(text=text, reply_markup=markup)
             else:
                 text = self.text.my_resume_on_moderation()
@@ -627,7 +639,7 @@ class Menu:
         DialogResumeManager(user_id=user.id).city()
         text = self.text.work_city()
         markup = self.markup.city()
-        self.send_message(text=text, reply_markup=markup)
+        return self.send_message(text=text, reply_markup=markup)
 
     def check_work_city(self, user):
         return DialogResumeManager(user_id=user.id).check_city()
@@ -636,7 +648,7 @@ class Menu:
         ResumeManager(user_id=user.id).update_description(description=text)
         DialogResumeManager(user_id=user.id).clean()
         text = self.text.work_moderation()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def check_work_description(self, user):
         return DialogResumeManager(user_id=user.id).check_description()
@@ -645,7 +657,7 @@ class Menu:
         ResumeManager(user_id=user.id).update_education(education=text)
         DialogResumeManager(user_id=user.id).description()
         text = self.text.work_description()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def check_education(self, user):
         return DialogResumeManager(user_id=user.id).check_education()
@@ -655,24 +667,24 @@ class Menu:
         DialogResumeManager(user_id=user.id).experience()
         text = self.text.work_experience()
         markup = self.markup.experience()
-        self.send_message(text=text, reply_markup=markup)
+        return self.send_message(text=text, reply_markup=markup)
 
     def moderation(self, text, user):
         JobManager(user_id=user.id).update_write_to_employer(
             write_to_employer=text)
         DialogJobManager(user_id=user.id).clean()
         text = self.text.moderation()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def where_to_find_username_link(self, user, text):
         text = self.text.where_to_find_username_link()
         self.send_message(text=text)
         time.sleep(3.0)
-        self.where_to_find_username()
+        return self.where_to_find_username()
 
     def where_to_find_username(self):
         text = self.text.where_to_find_username()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def check_looking_for(self, user):
         return DialogJobManager(user_id=user.id).check_looking_for()
@@ -705,14 +717,14 @@ class Menu:
         return DialogJobManager(user_id=user.id).check_write_to_employer()
 
     def send_message(self, text, user_id=None, reply_markup=None):
-        self.bot.send_message(
+        return self.bot.send_message(
             chat_id=user_id or self.chat_id,
             text=text,
             parse_mode='HTML',
             reply_markup=reply_markup)
 
     def edit_message_text(self, text, reply_markup=None):
-        self.bot.edit_message_text(
+        return self.bot.edit_message_text(
             chat_id=self.chat_id,
             message_id=self.message_id,
             text=text,
@@ -720,7 +732,7 @@ class Menu:
             reply_markup=reply_markup)
 
     def answer_inline_query(self, results):
-        self.bot.answer_inline_query(
+        return self.bot.answer_inline_query(
             inline_query_id=self.chat_id,
             results=results,
             cache_time=1,
@@ -733,29 +745,29 @@ class Menu:
         self.user.create()
         text = self.text.start_menu()
         reply_markup = self.markup.start_menu()
-        self.send_message(text=text, reply_markup=reply_markup)
+        return self.send_message(text=text, reply_markup=reply_markup)
 
     def employer(self, user, text):
         self.user.update_profile(profile=1)
         text = self.text.employer()
         reply_markup = self.markup.employer()
-        self.send_message(text=text, reply_markup=reply_markup)
+        return self.send_message(text=text, reply_markup=reply_markup)
 
     def worker(self, user, text):
         self.user.update_profile(profile=2)
         text = self.text.worker()
         reply_markup = self.markup.worker()
-        self.send_message(text=text, reply_markup=reply_markup)
+        return self.send_message(text=text, reply_markup=reply_markup)
 
     def tell_friends(self, user, text):
         text = self.text.tell_friends()
         reply_markup = self.markup.tell_friends()
-        self.send_message(text=text, reply_markup=reply_markup)
+        return self.send_message(text=text, reply_markup=reply_markup)
 
     def how_we_are_working(self, user, text):
         user = self.user.get_user()
         text = self.text.how_we_are_working(profile=user.profile)
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def send_categories(self, user, text):
         if user.profile == 1:
@@ -768,6 +780,8 @@ class Menu:
             dialog = DialogResumeManager(user_id=user.id)
             dialog.clean()
             dialog.create()
+        else:
+            print(__name__, 'send cat')
 
         text = self.text.send_categories()
 
@@ -776,10 +790,7 @@ class Menu:
         else:
             reply_markup = self.markup.send_categories()
 
-        try:
-            self.edit_message_text(text=text, reply_markup=reply_markup)
-        except ApiException:
-            self.send_message(text=text, reply_markup=reply_markup)
+        return self.send_message(text=text, reply_markup=reply_markup)
 
     def send_sub_category(self, category, user):
         if user.profile == 1:
@@ -788,6 +799,8 @@ class Menu:
         elif user.profile == 2:
             ResumeManager(user_id=user.id).create(category=category)
             DialogResumeManager(user_id=user.id).update_category()
+        else:
+            print(__name__, 'send sub cat')
 
         text = self.text.send_sub_category()
 
@@ -796,67 +809,67 @@ class Menu:
         else:
             reply_markup = self.markup.send_sub_category(category)
 
-        self.edit_message_text(text=text, reply_markup=reply_markup)
+        return self.edit_message_text(text=text, reply_markup=reply_markup)
 
     def looking_for(self, position, user):
         JobManager(user_id=user.id).update_position(position=position)
         DialogJobManager(user_id=user.id).looking_for()
         text = self.text.looking_for()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def name(self, position, user):
         ResumeManager(user_id=user.id).update_position(position=position)
         DialogResumeManager(user_id=user.id).name()
         text = self.text.name()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def wage(self, text, user):
         JobManager(user_id=user.id).update_looking_for(looking_for=text)
         DialogJobManager(user_id=user.id).wage()
         text = self.text.wage()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def age(self, text, user):
         ResumeManager(user_id=user.id).update_name(name=text)
         DialogResumeManager(user_id=user.id).age()
         text = self.text.age()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def city(self, text, user):
         JobManager(user_id=user.id).update_wage(wage=text)
         DialogJobManager(user_id=user.id).city()
         text = self.text.city()
         markup = self.markup.city()
-        self.send_message(text=text, reply_markup=markup)
+        return self.send_message(text=text, reply_markup=markup)
 
     def lang(self, text, user):
         ResumeManager(user_id=user.id).update_city(city=text)
         DialogResumeManager(user_id=user.id).lang()
         text = self.text.lang()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def education(self, text, user):
         ResumeManager(user_id=user.id).update_experience(experience=text)
         DialogResumeManager(user_id=user.id).education()
         text = self.text.education()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def experience(self, text, user):
         JobManager(user_id=user.id).update_city(city=text)
         DialogJobManager(user_id=user.id).experience()
         text = self.text.experience()
         markup = self.markup.experience()
-        self.send_message(text=text, reply_markup=markup)
+        return self.send_message(text=text, reply_markup=markup)
 
     def description(self, text, user):
         JobManager(user_id=user.id).update_experience(experience=text)
         DialogJobManager(user_id=user.id).description()
         text = self.text.description()
-        self.send_message(text=text)
+        return self.send_message(text=text)
 
     def write_to_employer(self, text, user):
         JobManager(user_id=user.id).update_description(description=text)
         DialogJobManager(user_id=user.id).write_to_employer()
         text = self.text.write_to_employer()
         reply_markup = self.markup.write_to_employer()
-        self.send_message(text=text, reply_markup=reply_markup)
+        return self.send_message(text=text, reply_markup=reply_markup)

@@ -97,5 +97,6 @@ class ResumeManager(Manager):
             resume.publish = True
             resume.is_active = True
             resume.save()
-        except AttributeError:
-            pass
+        except AttributeError as error:
+            print(str(error))
+            raise AttributeError('publish error')

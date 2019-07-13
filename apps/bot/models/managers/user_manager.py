@@ -28,8 +28,9 @@ class UserManager:
     def get_user(self):
         try:
             return User.objects.get(user_id=self.user_id)
-        except User.DoesNotExist:
-            pass
+        except User.DoesNotExist as error:
+            print(str(error))
+            raise User.DoesNotExist('user doesNotExist')
 
     def set_phone(self, phone):
         user = User.objects.get(user_id=self.user_id)

@@ -88,9 +88,9 @@ class Text:
         return self.text
 
     def send_categories(self):
-        self.text = '<b>Вибери категорию!</b>\n Для того чтобы я смог делать' \
+        self.text = '<b>Вибери категорию!</b>\nДля того чтобы я смог делать' \
                     ' точные рассылки и показывать твою вакансию только' \
-                    ' потенциальным кандидатам тебе нужно выбрать категорию.' \
+                    ' потенциальным кандидатам, тебе нужно выбрать категорию.'\
                     '<a href="https://' \
                     'telegra.ph/file/4381281c14528aacd99ed.jpg">&#8205;</a>'
         return self.text
@@ -161,7 +161,7 @@ class Text:
 
     def moderation(self):
         self.text = '<b>Модерация!</b>\nВакансия отправлена на модерацию,' \
-                    ' подожди пожалуйста. После модерации я пришлю тебе' \
+                    ' подожди пожалуйста. После модерации я отправлю тебе' \
                     ' готовый текст.<a href="https:' \
                     '//telegra.ph/file/8e149b7bf8849955c3212.jpg">&#8205;</a>'
         return self.text
@@ -263,7 +263,7 @@ class Text:
 
     def view_resume(self, resume):
         self.text = f'<b>Имя: </b>{resume.name}\n\n' \
-                    f'<b>Возвраст:</b> {resume.age}\n\n' \
+                    f'<b>Возраст:</b> {resume.age}\n\n' \
                     f'<b>Желаемый город работы:</b>' \
                     f' {resume.city if resume.city else "Отдаленная работа"}' \
                     f'\n\n<b>Языки:</b> {resume.lang}\n\n' \

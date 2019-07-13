@@ -29,11 +29,7 @@ HOST = os.environ.get('HOST', 'robosapiens.icu')
 
 DOMAIN = f'https://{HOST}'
 
-ALLOWED_HOSTS = [
-    HOST,
-    'localhost',
-    'robosapiens.icu',
-]
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -64,7 +60,7 @@ ROOT_URLCONF = 'apps.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,6 +140,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
+
 TELEGRAM_URL = 'https://api.telegram.org'
 
 TOKEN = os.environ.get('TOKEN',
@@ -152,4 +154,5 @@ TOKEN = os.environ.get('TOKEN',
 URL = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
 PUBLIC_KEY = os.getenv('PUBLIC_KEY')
+
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')

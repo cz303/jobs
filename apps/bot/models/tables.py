@@ -169,7 +169,7 @@ class Resume(CommonInfo):
 
     def confirm(self):
         text = f'<b>Имя: </b>{self.name}\n\n' \
-            f'<b>Возвраст:</b> {self.age}\n\n' \
+            f'<b>Возраст:</b> {self.age}\n\n' \
             f'<b>Желаемый город работы:</b>' \
             f' {self.city if self.city else "Отдаленная работа"}\n\n' \
             f'<b>Языки:</b> {self.lang}\n\n' \
