@@ -88,18 +88,13 @@ class Text:
         return self.text
 
     def send_categories(self):
-        self.text = '<b>Вибери категорию!</b>\nДля того чтобы я смог делать' \
-                    ' тебе точную рассылку вакансий' \
-                    ' по твоим интересам, тебе нужно выбрать категорию.‍'\
-                    '<a href="https://' \
+        self.text = '<b>Вибери категорию!</b><a href="https://' \
                     'telegra.ph/file/4381281c14528aacd99ed.jpg">&#8205;</a>'
         return self.text
 
     def send_sub_category(self):
-        self.text = '<b>Вибери под категорию!</b>\n' \
-                    'Теперь выбери под категорию. Это позволит мне подобрать' \
-                    ' потенциальные вакансии для тебя.' \
-                    '<a href="https://telegra.ph/file/4381281c14528aacd99ed' \
+        self.text = '<b>Вибери под категорию!</b><a href="https://' \
+                    'telegra.ph/file/4381281c14528aacd99ed' \
                     '.jpg">&#8205;</a>'
         return self.text
 
