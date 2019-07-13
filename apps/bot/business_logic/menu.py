@@ -515,7 +515,7 @@ class Menu:
 
         text = f'<b>Ты выбрал!\n</b>Категорию: {search.category}\n'\
                f'Должность: {search.position}<a href="https:' \
-               f'//">&#160;</a>'
+               f'//telegra.ph/file/cd5f0faac33cd2cbab97a.jpg">&#160;</a>'
 
         return self.edit_message_text(text=text, reply_markup=markup)
 
