@@ -88,8 +88,4 @@ class Parser:
         elif 'inline_query' in self.data:
             return self.data['inline_query']['user']['username']
         else:
-            try:
-                return self.data['message']['user']['username']
-            except KeyError as error:
-                print(str(error))
-                return ''
+            return self.data['message']['user'].get('username', '')

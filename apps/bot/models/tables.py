@@ -7,12 +7,12 @@ from .exeptions import FailureReasonError
 
 
 def get_score(user_id):
-    try:
-        user = User.objects.get(user_id=user_id)
-        return user.credit
-    except User.DoesNotExist as error:
-        print(str(error))
-        return 0
+    user = User.objects.filter(user_id=user_id)
+
+    if not user:
+        return float(0)
+
+    return user.credit
 
 
 class User(models.Model):

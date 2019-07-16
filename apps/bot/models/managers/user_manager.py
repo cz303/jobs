@@ -1,5 +1,4 @@
 from bot.models.tables import User
-from django.db.utils import IntegrityError
 
 __all__ = ('UserManager',)
 
@@ -12,13 +11,8 @@ class UserManager:
     def create(self, profile=None):
         if not profile:
             profile = 1
-        try:
-            User.objects.create(
-                user_id=self.user_id,
-                username=self.username or 'Неопознаный суслик',
-                profile=profile)
-        except IntegrityError as error:
-            print(f'There is such := {error}')
+
+        User.objects.create(user_id=self.user_id, profile=profile)
 
     def update_profile(self, profile):
         user = User.objects.get(user_id=self.user_id)
@@ -26,11 +20,7 @@ class UserManager:
         user.save()
 
     def get_user(self):
-        try:
-            return User.objects.get(user_id=self.user_id)
-        except User.DoesNotExist as error:
-            print(str(error))
-            raise User.DoesNotExist('user doesNotExist')
+        return User.objects.filter(user_id=self.user_id)
 
     def set_phone(self, phone):
         user = User.objects.get(user_id=self.user_id)

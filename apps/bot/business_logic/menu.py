@@ -15,8 +15,6 @@ from bot.models.managers.dialog_search_manager import DialogSearchManager
 from bot.models.managers.city_manager import city_valid
 from bot.models.managers.search_manager import SearchManager
 from bot.business_logic.liqpay import LiqPay
-from bot.models.managers.statistics_manager import StatisticsManager
-from bot.models.tables import Statistics
 from bot.models.managers.send_manager import SendManager
 
 
@@ -55,7 +53,6 @@ class Menu:
             '#jobs': self.search_response,
             '✅ Опубликовать': self.publish,
             'Оплатить в: USD(доллар)': self.pay,
-            'Сделать рассылку': self.start_send,
             '✅ Я согласен': self.complete_send,
         }
 
@@ -331,94 +328,6 @@ class Menu:
         text = self.text.found_candidates(len(resumes), balance)
 
         return self.send_message(text=text)
-
-    def start_send(self, user, text):
-        price = 0.02
-        if float(user.credit) < price:
-            text = self.text.top_up_account(balance=user.credit)
-            markup = self.markup.my_score()
-            self.send_message(text=text, reply_markup=markup)
-
-            # резюме которое будем рассылать
-            job = JobManager(user_id=user.id).last_job()
-
-            # ищем рабочих по заданым критериям
-            try:
-                resumes = ResumeManager(user_id=self.user_id).search_resume(
-                    city=job.city,
-                    category=job.category,
-                    posistion=job.position)
-
-                if not resumes:
-                    text = self.text.not_jobs()
-                    return self.send_message(text=text)
-                else:
-                    text = self.text.start_send()
-                    self.send_message(text=text)
-                    # сбор статистики
-                    count = len(resumes)
-                    funds_spent = count * price
-                    sent = [i.user.user_id for i in resumes]
-                    stat = StatisticsManager(user_id=user.id)
-
-                    try:
-                        free = stat.free_send()
-                    except Statistics.DoesNotExist as error:
-                        print(str(error))
-                        stat.create()
-                        free = stat.free_send()
-
-                    # перые 10 рассылок
-                    st = stat.get()
-
-                    if free > 0:
-                        free_send = float(free) - count
-                        text = self.text.statistics(
-                            count=count,
-                            price=price,
-                            funds_spent=funds_spent,
-                            free_send_count=st.free_send - count,
-                            free_send=count)
-                        # рассылка рабочим
-                        self.send_to(resumes=resumes, job=job)
-                        self.send_message(text=text)
-                        stat.save(
-                            count=float(st.count) + float(count),
-                            sent_to_users=sent,
-                            price=price,
-                            funds_spent=float(
-                                st.funds_spent) + float(funds_spent),
-                            free_send=free_send)
-                    else:
-                        # считаем баланс
-                        balance = self.user.get_score()
-                        credit = float(balance) - funds_spent
-
-                        if credit < 1 and credit < len(resumes):
-                            text = self.text.top_up_account(balance)
-                            self.send_message(text=text)
-                        else:
-                            # рассылка рабочим
-                            self.send_to(resumes=resumes, job=job)
-                            # обновляем баланс
-                            self.user.update_credit(credit=credit)
-                            text = self.text.statistics(
-                                count=count,
-                                price=price,
-                                funds_spent=funds_spent,
-                                credit=credit
-                            )
-                            stat.save(
-                                count=float(st.count) + float(count),
-                                sent_to_users=sent,
-                                price=price,
-                                funds_spent=float(
-                                    st.funds_spent) + float(funds_spent),
-                                free_send=0
-                            )
-                            self.send_message(text=text)
-            except AssertionError as error:
-                print(str(error))
 
     def publish(self, user, text):
         if user.profile == 1:

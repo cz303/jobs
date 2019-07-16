@@ -11,4 +11,4 @@ console_output_handler = logging.StreamHandler(sys.stderr)
 console_output_handler.setFormatter(formatter)
 logger.addHandler(console_output_handler)
 
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.INFO)
