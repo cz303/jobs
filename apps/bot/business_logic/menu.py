@@ -67,7 +67,7 @@ class Menu:
 
     def send(self):
         text = self.parser.text()
-        user = self.user.get_user()
+        user, status = self.user.get_user()
 
         if not user:
             return self.start_menu(text=text, user=user)
