@@ -38,7 +38,7 @@ class User(models.Model):
     timestamp = models.IntegerField(default=time)
 
     def __str__(self):
-        return self.username
+        return self.user_id
 
     # def save(self, *args, **kwargs):
     #     credit = get_score(self.user_id)
