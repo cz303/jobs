@@ -674,7 +674,6 @@ class Menu:
         return self.send_message(text=text, reply_markup=reply_markup)
 
     def how_we_are_working(self, user, text):
-        user = self.user.get_user()
         text = self.text.how_we_are_working(profile=user.profile)
         return self.send_message(text=text)
 
