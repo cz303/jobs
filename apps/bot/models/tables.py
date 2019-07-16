@@ -8,12 +8,12 @@ from django.db.utils import IntegrityError
 
 
 def get_score(user_id):
-    user = User.objects.get(user_id=user_id)
+    user = User.objects.filter(user_id=user_id)[:1]
 
     if not user:
         return float(0)
 
-    return user.credit
+    return user[0].credit
 
 
 class User(models.Model):
@@ -37,6 +37,9 @@ class User(models.Model):
     created = models.DateTimeField(auto_now=True, editable=False)
     free_send = models.BooleanField(default=False)
     timestamp = models.IntegerField(default=time)
+
+    def __str__(self):
+        return self.username or str(self.user_id)
 
     def save(self, *args, **kwargs):
         credit = get_score(self.user_id)
