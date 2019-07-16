@@ -88,4 +88,5 @@ class Parser:
         elif 'inline_query' in self.data:
             return self.data['inline_query']['user']['username']
         else:
-            return self.data['message']['user'].get('username', '')
+            return self.data['message']['user'].get('username',
+                                                    'Неопознаный Суслик')

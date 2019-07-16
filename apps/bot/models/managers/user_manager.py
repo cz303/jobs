@@ -12,7 +12,11 @@ class UserManager:
         if not profile:
             profile = 1
 
-        User.objects.create(user_id=self.user_id, profile=profile)
+        User.objects.create(
+            user_id=self.user_id,
+            profile=profile,
+            username=self.username
+        )
 
     def update_profile(self, profile):
         user = User.objects.get(user_id=self.user_id)

@@ -4,10 +4,11 @@ import requests
 from django.conf import settings
 import json
 from .exeptions import FailureReasonError
+from django.db.utils import IntegrityError
 
 
 def get_score(user_id):
-    user = User.objects.filter(user_id=user_id)
+    user = User.objects.get(user_id=user_id)
 
     if not user:
         return float(0)
@@ -55,7 +56,10 @@ class User(models.Model):
                           data={f"chat_id": {str(self.user_id)},
                                 "text": text,
                                 "parse_mode": "HTML"})
-        super().save(*args, **kwargs)
+        try:
+            super().save(*args, **kwargs)
+        except IntegrityError as error:
+            print(str(error))
 
 
 class Moderation:
