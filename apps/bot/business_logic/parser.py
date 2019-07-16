@@ -92,3 +92,4 @@ class Parser:
                 return self.data['message']['user']['username']
             except KeyError as error:
                 print(str(error))
+                return ''
