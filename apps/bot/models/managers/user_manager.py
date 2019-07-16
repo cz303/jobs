@@ -15,7 +15,7 @@ class UserManager:
         User.objects.create(
             user_id=self.user_id,
             profile=profile,
-            username=self.username
+            username=self.username or 'Неопознаный суслик'
         )
 
     def update_profile(self, profile):
