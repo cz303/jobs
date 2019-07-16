@@ -1,5 +1,5 @@
 from django.db import models
-from time import time
+from time import time, sleep
 import requests
 from django.conf import settings
 import json
@@ -37,28 +37,25 @@ class User(models.Model):
     free_send = models.BooleanField(default=False)
     timestamp = models.IntegerField(default=time)
 
-    def __str__(self):
-        return self.user_id
-
-    # def save(self, *args, **kwargs):
-    #     credit = get_score(self.user_id)
-    #     if float(self.credit) > float(credit):
-    #         text = f"✅ Оплата прошла успешно!"
-    #         requests.post(url=settings.URL,
-    #                       data={f"chat_id": {str(self.user_id)},
-    #                             "text": text,
-    #                             "parse_mode": "HTML"})
-    #         sleep(2.0)
-    #         text = '<b>Как сделать рассылку вакансии?</b>\nЖми в меню' \
-    #                ' кнопку "Мои вакансии", вибери вакансию которую хочешь' \
-    #                ' разослать пользователям. В выбранной вакансии жми' \
-    #                ' кнопку "Сделать рассылку".<a href="https://' \
-    #                'telegra.ph/file/bf4a40c5d54b8330b2424.jpg">&#8205;</a>'
-    #         requests.post(url=settings.URL,
-    #                       data={f"chat_id": {str(self.user_id)},
-    #                             "text": text,
-    #                             "parse_mode": "HTML"})
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        credit = get_score(self.user_id)
+        if float(self.credit) > float(credit):
+            text = f"✅ Оплата прошла успешно!"
+            requests.post(url=settings.URL,
+                          data={f"chat_id": {str(self.user_id)},
+                                "text": text,
+                                "parse_mode": "HTML"})
+            sleep(2.0)
+            text = '<b>Как сделать рассылку вакансии?</b>\nЖми в меню' \
+                   ' кнопку "Мои вакансии", вибери вакансию которую хочешь' \
+                   ' разослать пользователям. В выбранной вакансии жми' \
+                   ' кнопку "Сделать рассылку".<a href="https://' \
+                   'telegra.ph/file/bf4a40c5d54b8330b2424.jpg">&#8205;</a>'
+            requests.post(url=settings.URL,
+                          data={f"chat_id": {str(self.user_id)},
+                                "text": text,
+                                "parse_mode": "HTML"})
+        super().save(*args, **kwargs)
 
 
 class Moderation:
