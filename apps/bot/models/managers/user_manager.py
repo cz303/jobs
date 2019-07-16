@@ -24,11 +24,10 @@ class UserManager:
         user.save()
 
     def get_user(self):
-        return User.objects.get_or_create(
-            user_id=self.user_id,
-            username=self.username or 'Суслик',
-            profile=1
-        )
+        try:
+            return User.objects.get(user_id=self.user_id)
+        except User.DoesNotExist:
+            pass
 
     def set_phone(self, phone):
         user = User.objects.get(user_id=self.user_id)
