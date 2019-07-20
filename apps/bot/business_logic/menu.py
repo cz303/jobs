@@ -698,7 +698,10 @@ class Menu:
         else:
             reply_markup = self.markup.send_categories()
 
-        return self.send_message(text=text, reply_markup=reply_markup)
+        try:
+            self.edit_message_text(text=text, reply_markup=reply_markup)
+        except ApiException:
+            self.send_message(text=text, reply_markup=reply_markup)
 
     def send_sub_category(self, category, user):
         if user.profile == 1:
