@@ -54,7 +54,7 @@ class Markup:
         return self.markup
 
     def start_menu(self):
-        texts = ['🏬 Работодатель', '👨‍ Работник']
+        texts = ['🏦 Работодатель', '👨‍ Работник']
         return self.send(texts)
 
     def employer(self):

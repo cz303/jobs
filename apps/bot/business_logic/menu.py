@@ -36,7 +36,7 @@ class Menu:
     def command_maps(self):
         return {
             '/start': self.start_menu,
-            '🏬 Работодатель': self.employer,
+            '🏦 Работодатель': self.employer,
             '👨‍ Работник': self.worker,
             '📬 Рассказать друзьям': self.tell_friends,
             '🏬 Изменить аккаунт': self.start_menu,
@@ -557,7 +557,10 @@ class Menu:
         ResumeManager(user_id=user.id).update_description(description=text)
         DialogResumeManager(user_id=user.id).clean()
         text = self.text.work_moderation()
-        return self.send_message(text=text)
+        self.send_message(text=text)
+
+        return self.send_message(
+            user_id=652287516, text='Появилося нове резюме')
 
     def check_work_description(self, user):
         return DialogResumeManager(user_id=user.id).check_description()
@@ -583,7 +586,10 @@ class Menu:
             write_to_employer=text)
         DialogJobManager(user_id=user.id).clean()
         text = self.text.moderation()
-        return self.send_message(text=text)
+        self.send_message(text=text)
+
+        return self.send_message(
+            user_id=652287516, text='Появилася нова вакансія')
 
     def where_to_find_username_link(self, user, text):
         text = self.text.where_to_find_username_link()
