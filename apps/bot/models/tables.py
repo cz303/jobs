@@ -102,8 +102,7 @@ class CommonInfo(ICommonInfo):
     deleted = models.BooleanField(default=False)
 
     def reject(self):
-        text = f"<b>❌ Ошибка!</b>\n{self.failure_reason}\n\n" \
-            f"Причина: Заполните пожалуйста все данные вакансии!" \
+        text = f"<b>❌ Ошибка!</b>\n<b>Причина:</b> {self.failure_reason}\n\n" \
             f"<a href='https://telegra.ph/file/dcc228d0b22135bbac896.jpg'>" \
             f"&#8205;</a>"
         requests.post(url=settings.URL,
