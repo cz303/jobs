@@ -52,11 +52,13 @@ class User(models.Model):
                                 "text": text,
                                 "parse_mode": "HTML"})
             sleep(2.0)
-            text = '<b>Как сделать рассылку вакансии?</b>\nЖми в меню' \
-                   ' кнопку "Мои вакансии", вибери вакансию которую хочешь' \
-                   ' разослать пользователям. В выбранной вакансии жми' \
+            text = '<b>Как сделать рассылку вакансии?</b>\n\n1.Жми в меню' \
+                   ' кнопку "Мои вакансии"\n\n' \
+                   '2. Из списка своих вакансий,' \
+                   ' вибери вакансию которую хочешь' \
+                   ' разослать пользователям.\n\n3. В выбранной вакансии жми' \
                    ' кнопку "Сделать рассылку".<a href="https://' \
-                   'telegra.ph/file/bf4a40c5d54b8330b2424.jpg">&#8205;</a>'
+                   'telegra.ph/file/3b77208b93d61da309f3f.jpg">&#8205;</a>'
             requests.post(url=settings.URL,
                           data={f"chat_id": {str(self.user_id)},
                                 "text": text,
@@ -102,7 +104,7 @@ class CommonInfo(ICommonInfo):
     deleted = models.BooleanField(default=False)
 
     def reject(self):
-        text = f"<b>❌ Ошибка!</b>\n<b>Причина:</b> {self.failure_reason}\n\n" \
+        text = f"<b>❌ Ошибка!</b>\n<b>Причина:</b> {self.failure_reason}" \
             f"<a href='https://telegra.ph/file/dcc228d0b22135bbac896.jpg'>" \
             f"&#8205;</a>"
         requests.post(url=settings.URL,
