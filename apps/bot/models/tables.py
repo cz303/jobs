@@ -25,6 +25,8 @@ class User(models.Model):
 
     class Meta:
         db_table = 'users'
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     id = models.AutoField(primary_key=True, editable=False)
     user_id = models.IntegerField(null=False, unique=True)
@@ -67,9 +69,9 @@ class User(models.Model):
 
 class Moderation:
     STATUS = (
-        (1, 'Waiting for verification'),
-        (2, 'Confirmed'),
-        (3, 'Rejected')
+        (1, 'В ожидании подтверждения'),
+        (2, 'Подтвержденные'),
+        (3, 'Отклоненные')
     )
 
 
@@ -101,9 +103,8 @@ class CommonInfo(ICommonInfo):
 
     def reject(self):
         text = f"<b>❌ Ошибка!</b>\n{self.failure_reason}\n\n" \
-            f"Исправь ошибку, которая указана выше," \
-            f" и создай вакансию заново, нажми кнопку 'Создать вакансию'."\
-            f"<a href='https://telegra.ph/file/98cad48a0b2343f710f96.jpg'>" \
+            f"Причина: Заполните пожалуйста все данные вакансии!" \
+            f"<a href='https://telegra.ph/file/dcc228d0b22135bbac896.jpg'>" \
             f"&#8205;</a>"
         requests.post(url=settings.URL,
                       data={f"chat_id": {str(self.user.user_id)},
@@ -114,6 +115,8 @@ class CommonInfo(ICommonInfo):
 class Job(CommonInfo):
     class Meta:
         db_table = 'jobs'
+        verbose_name = 'Вакансия'
+        verbose_name_plural = 'Вакансии'
 
     looking_for = models.TextField(max_length=255, null=True)
     wage = models.CharField(max_length=255, null=True)
@@ -161,6 +164,8 @@ class Job(CommonInfo):
 class Resume(CommonInfo):
     class Meta:
         db_table = 'resumes'
+        verbose_name = 'Резюме'
+        verbose_name_plural = 'Резюме'
 
     name = models.CharField(max_length=255, null=True)
     age = models.CharField(max_length=255, null=True)
@@ -224,6 +229,8 @@ class Resume(CommonInfo):
 class City(models.Model):
     class Meta:
         db_table = 'city'
+        verbose_name = 'Город'
+        verbose_name_plural = 'Города'
 
     id = models.AutoField(primary_key=True, editable=False)
     name = models.CharField(max_length=255)
