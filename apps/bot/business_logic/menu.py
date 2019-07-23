@@ -36,10 +36,10 @@ class Menu:
     def command_maps(self):
         return {
             '/start': self.start_menu,
-            '🏦 Работодатель': self.employer,
+            '🏬 Работодатель': self.employer,
             '👨‍ Работник': self.worker,
             '📬 Рассказать друзьям': self.tell_friends,
-            '🏬 Изменить аккаунт': self.start_menu,
+            '📲 Изменить аккаунт': self.start_menu,
             'Как мы работаем?': self.how_we_are_working,
             'Мои резюме': self.my_resume,
             'r:return': self.my_resume,
