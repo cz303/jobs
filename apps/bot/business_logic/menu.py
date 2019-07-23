@@ -559,8 +559,13 @@ class Menu:
         text = self.text.work_moderation()
         self.send_message(text=text)
 
+        if hasattr(user, 'username') and user.username:
+            name = user.username
+        else:
+            name = user.id
+
         return self.send_message(
-            user_id=652287516, text='Появилося нове резюме')
+            user_id=652287516, text=f'Появилося нове резюме\n{name}')
 
     def check_work_description(self, user):
         return DialogResumeManager(user_id=user.id).check_description()
@@ -588,8 +593,13 @@ class Menu:
         text = self.text.moderation()
         self.send_message(text=text)
 
+        if hasattr(user, 'username') and user.username:
+            name = user.username
+        else:
+            name = user.id
+
         return self.send_message(
-            user_id=652287516, text='Появилася нова вакансія')
+            user_id=652287516, text=f'Появилася нова вакансія\n{name}')
 
     def where_to_find_username_link(self, user, text):
         text = self.text.where_to_find_username_link()
