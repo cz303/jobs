@@ -327,9 +327,7 @@ class Text:
         return self.text
 
     def not_jobs(self):
-        self.text = '<b>По вашему запросу вакансий еще нет!</b>' \
-                    '<a href="https://' \
-                    'telegra.ph/file/4539f1c1b87659d4f66ee.jpg">&#8205;</a>'
+        self.text = '<b>По вашему запросу ещё нет кандидатов!‍</b>'
         return self.text
 
     def start_send(self):
