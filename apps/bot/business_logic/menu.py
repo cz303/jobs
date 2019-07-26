@@ -348,8 +348,7 @@ class Menu:
                     posistion=job.position)
 
                 if not resumes:
-                    text = self.text.not_jobs()
-                    return self.send_message(text=text)
+                    return
 
                 candidates = [i.user.user_id for i in resumes if
                               i.user.user_id != self.user_id]
