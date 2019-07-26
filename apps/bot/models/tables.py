@@ -94,8 +94,8 @@ class CommonInfo(ICommonInfo):
     category = models.CharField(max_length=255, null=True)
     position = models.CharField(max_length=255, null=True)
     remote = models.BooleanField(default=False)
-    experience = models.CharField(max_length=255, null=True)
-    description = models.TextField(max_length=300, null=True)
+    experience = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(max_length=300, null=True, blank=True)
     moderation = models.IntegerField(choices=Moderation.STATUS, default=1)
     is_active = models.BooleanField(default=False)
     failure_reason = models.TextField(max_length=255, blank=True, null=True)
@@ -119,11 +119,11 @@ class Job(CommonInfo):
         verbose_name = 'Вакансия'
         verbose_name_plural = 'Вакансии'
 
-    looking_for = models.TextField(max_length=100, null=True)
-    wage = models.CharField(max_length=255, null=True)
+    looking_for = models.TextField(max_length=100, null=True, blank=True)
+    wage = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, blank=True, null=True)
     dispatch = models.IntegerField(default=0)
-    write_to_employer = models.CharField(max_length=255, null=True)
+    write_to_employer = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.category
@@ -168,11 +168,11 @@ class Resume(CommonInfo):
         verbose_name = 'Резюме'
         verbose_name_plural = 'Резюме'
 
-    name = models.CharField(max_length=255, null=True)
-    age = models.CharField(max_length=255, null=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    age = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, blank=True, null=True)
-    lang = models.CharField(max_length=255, null=True)
-    education = models.TextField(max_length=255, null=True)
+    lang = models.CharField(max_length=255, null=True, blank=True)
+    education = models.TextField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.category
