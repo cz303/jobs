@@ -95,7 +95,7 @@ class CommonInfo(ICommonInfo):
     position = models.CharField(max_length=255, null=True)
     remote = models.BooleanField(default=False)
     experience = models.CharField(max_length=255, null=True)
-    description = models.TextField(max_length=1000, null=True)
+    description = models.TextField(max_length=300, null=True)
     moderation = models.IntegerField(choices=Moderation.STATUS, default=1)
     is_active = models.BooleanField(default=False)
     failure_reason = models.TextField(max_length=255, blank=True, null=True)
@@ -119,7 +119,7 @@ class Job(CommonInfo):
         verbose_name = 'Вакансия'
         verbose_name_plural = 'Вакансии'
 
-    looking_for = models.TextField(max_length=255, null=True)
+    looking_for = models.TextField(max_length=100, null=True)
     wage = models.CharField(max_length=255, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
     dispatch = models.IntegerField(default=0)
