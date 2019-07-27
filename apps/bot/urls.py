@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
     path('{}'.format(settings.TOKEN), csrf_exempt(BotJobsView.as_view()),
          name='bot_view'),
+    path('sentry-debug/', BotJobsView.as_view()),
     path('sheets', csrf_exempt(SheetsView.as_view()),
          name='sheets_view'),
 ]
