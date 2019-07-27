@@ -348,13 +348,14 @@ class Menu:
                     posistion=job.position)
 
                 if not resumes:
-                    return
+                    text = self.text.not_jobs()
+                    return self.send_message(text=text)
 
                 candidates = [i.user.user_id for i in resumes if
                               i.user.user_id != self.user_id]
-                self.send_to(candidates[:10], job)
 
                 UserManager(user_id=user.id).free_send()
+                self.send_to(candidates[:10], job)
 
                 text = self.text.top_up_account(balance=user.credit)
                 markup = self.markup.my_score()
