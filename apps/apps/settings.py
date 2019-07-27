@@ -11,13 +11,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
-sentry_sdk.init(
-    dsn="https://10eab6d2b0a311e996bc4201c0a8d02b@sentry.io/1515162",
-    integrations=[DjangoIntegration()]
-)
+# import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
+#
+# sentry_sdk.init(
+#     dsn="https://10eab6d2b0a311e996bc4201c0a8d02b@sentry.io/1515162",
+#     integrations=[DjangoIntegration()]
+# )
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
