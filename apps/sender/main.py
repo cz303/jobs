@@ -1,6 +1,7 @@
 from telethon import TelegramClient
 import os
 from time import sleep
+
 from telethon.tl.types import PeerUser
 
 
@@ -18,21 +19,24 @@ def main():
 
     text = 'Добрый день.\n\nНаша команда разработала замечательного бота для '\
            'поиска работы: @RS_Work_bot\n\nВы можете создавать в нём свои ' \
-           'вакансии, или искать работу.\n\nМы учли все недостатки ' \
-           'существующих ботов в телеграм, и создали очень' \
-           ' удобного и просто бота.'
+           'вакансии, или искать работу.\n\nМы учли все недостатки' \
+           ' существующих ботов в телеграм, и создали очень удобного' \
+           ' и просто бота.'
 
     print('I start the newsletter')
 
-    for send_id in ids:
-        print('I send to client msg')
-        user = client.get_entity(PeerUser(send_id))
-        client.send_message(user, text)
-        print('I sleep 5 seconds')
-        sleep(5)
-        print('continue')
+    def _send(ids):
+        for send_id in ids:
+            print('I send to client msg')
+            user = client.get_entity(PeerUser(send_id))
+            client.send_message(user, text)
+            print('I sleep 5 seconds')
+            sleep(5)
+            print('continue')
 
-    return print('I finished the newsletter')
+        return print('I finished the newsletter')
+
+    return _send(ids)
 
 
 if __name__ == '__main__':
