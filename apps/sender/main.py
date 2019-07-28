@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from telethon import TelegramClient, sync
-from telethon.errors.rpcerrorlist import FloodWaitError
+from telethon.errors.rpcerrorlist import FloodWaitError, PeerFloodError
 import os
 from time import sleep
 import logging
@@ -33,7 +33,7 @@ def main():
     counter = 0
 
     def _send(ids):
-        for send_id in ids:
+        for send_id in ids[50:]:
             nonlocal counter
             counter += 1
             print('I send to client msg')
@@ -44,6 +44,9 @@ def main():
             except FloodWaitError as error:
                 sec = int(str(error).split(' ')[3])
                 print('FLOOD, please sleep {}'.format(sec))
+            except PeerFloodError as error:
+                print(str(error))
+                sleep(60)
 
             nonlocal count
             count -= 1
