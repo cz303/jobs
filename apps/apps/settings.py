@@ -18,7 +18,7 @@ RAVEN_CONFIG = {
     'dsn': 'https://0457da50fe64460e811d771fd69b9774:adeb7c6117ed4d6abd7f053ff344c082@sentry.io/1515162',  # noqa
     # If you are using git, you can also automatically configure the
     # release based on the git info.
-    'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
+    'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
 }
 
 # import sentry_sdk
