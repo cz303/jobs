@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from telethon import TelegramClient, sync
+from telethon.errors.rpcerrorlist import FloodWaitError
 import os
 from time import sleep
 import logging
@@ -37,16 +38,20 @@ def main():
             counter += 1
             print('I send to client msg')
             user = client.get_entity(PeerUser(send_id))
-            client.send_message(user, text)
-            print('I sleep 5 seconds')
+            sec = None
+            try:
+                client.send_message(user, text)
+            except FloodWaitError as error:
+                msg = error.message
+                sec = msg.split(' ')[3]
+
             nonlocal count
             count -= 1
             print('Отправлено: {}'.format(counter))
             print('Осталось отправить: {}'.format(count))
-            if counter % 22 == 0:
-                sleep(500)
-            else:
-                sleep(5)
+
+            print('I sleep 5 seconds')
+            sleep(sec)
             print('continue')
 
         return print('I finished the newsletter')
