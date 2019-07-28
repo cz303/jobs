@@ -43,8 +43,8 @@ def main():
             count -= 1
             print('Отправлено: {}'.format(counter))
             print('Осталось отправить: {}'.format(count))
-            if counter % 30 == 0:
-                sleep(450)
+            if counter % 22 == 0:
+                sleep(500)
             else:
                 sleep(5)
             print('continue')
