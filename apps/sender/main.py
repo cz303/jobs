@@ -42,9 +42,8 @@ def main():
             try:
                 client.send_message(user, text)
             except FloodWaitError as error:
-                msg = error.message
-                sec = int(msg.split(' ')[3])
-                print(str(msg))
+                sec = int(str(error).split(' ')[3])
+                print('FLOOD, please sleep {}'.format(sec))
 
             nonlocal count
             count -= 1
