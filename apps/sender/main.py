@@ -33,7 +33,7 @@ def main():
     counter = 0
 
     def _send(ids):
-        for send_id in ids[50:]:
+        for send_id in ids[60:]:
             nonlocal counter
             counter += 1
             print('I send to client msg')
@@ -46,7 +46,7 @@ def main():
                 print('FLOOD, please sleep {}'.format(sec))
             except PeerFloodError as error:
                 print(str(error))
-                sleep(60)
+                sleep(5)
 
             nonlocal count
             count -= 1
