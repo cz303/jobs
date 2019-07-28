@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-from telethon import TelegramClient
+from telethon import TelegramClient, sync
 import os
 from time import sleep
-
+import logging
 from telethon.tl.types import PeerUser
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -42,4 +44,5 @@ def main():
 
 if __name__ == '__main__':
     print('Start Sender')
+    print(sync)
     main()
