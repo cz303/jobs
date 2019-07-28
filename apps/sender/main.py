@@ -28,13 +28,25 @@ def main():
 
     print('I start the newsletter')
 
+    count = len(ids)
+    counter = 0
+
     def _send(ids):
         for send_id in ids:
+            nonlocal counter
+            counter += 1
             print('I send to client msg')
             user = client.get_entity(PeerUser(send_id))
             client.send_message(user, text)
             print('I sleep 5 seconds')
-            sleep(5)
+            nonlocal count
+            count -= 1
+            print('Отправлено: {}'.format(counter))
+            print('Осталось отправить: {}'.format(count))
+            if counter % 30 == 0:
+                sleep(450)
+            else:
+                sleep(5)
             print('continue')
 
         return print('I finished the newsletter')
