@@ -17,7 +17,7 @@ services:
   sender:
     restart: always
     build: .
-    command: python apps/sender/main.py
+    command: python sender/main.py
     env_file:
       - .env
     volumes:
