@@ -283,7 +283,8 @@ class Markup:
         else:
             item = ('Удалить', f'v:del:{vacancy.id}')
 
-        data = [('Сделать рассылку', f'send:{vacancy.id}'),
+        data = [('◀️ Назад', 'v:return'),
+                ('Сделать рассылку', f'send:{vacancy.id}'),
                 item]
 
         return self.send(callback_data=data, inline=True)

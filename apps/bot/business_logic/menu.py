@@ -334,6 +334,7 @@ class Menu:
             JobManager(user_id=user.id).publish()
 
             if not user.free_send:
+                UserManager(user_id=user.id).free_send()
                 _text = self.text.free_send()
                 self.send_message(text=_text)
 
@@ -354,7 +355,6 @@ class Menu:
                 candidates = [i.user.user_id for i in resumes if
                               i.user.user_id != self.user_id]
 
-                UserManager(user_id=user.id).free_send()
                 self.send_to(candidates[:10], job)
 
                 text = self.text.top_up_account(balance=user.credit)
@@ -488,7 +488,7 @@ class Menu:
     def delete_vacations(self, user, text):
         vacation_id = text.split(':')[-1]
         JobManager(user_id=user.id).delete_vacations(vacation_id=vacation_id)
-        return self.my_vacations(user=user)
+        return self.my_vacations(user=user, text=text)
 
     def update_vacations(self, user, text):
         vacation_id = text.split(':')[-1]

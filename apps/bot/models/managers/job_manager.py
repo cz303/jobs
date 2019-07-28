@@ -90,7 +90,10 @@ class JobManager(Manager):
         job.save()
 
     def delete_vacations(self, vacation_id):
-        Job.objects.get(id=vacation_id).delete()
+        try:
+            Job.objects.get(id=vacation_id).delete()
+        except Job.DoesNotExist as error:
+            print(str(error))
 
     def publish(self):
         resume = Job.objects.filter(

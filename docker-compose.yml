@@ -14,6 +14,19 @@ services:
     networks:
       - jobs_network
 
+  sender:
+    restart: always
+    build: .
+    command: python apps/sender.py
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    ports:
+      - "6000:6000"
+    networks:
+      - jobs_network
+
   nginx-proxy:
     restart: always
     image: jwilder/nginx-proxy
