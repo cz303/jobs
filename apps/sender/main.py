@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from telethon import TelegramClient
 import os
 from time import sleep
