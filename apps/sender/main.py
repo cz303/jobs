@@ -38,7 +38,7 @@ def main():
             counter += 1
             print('I send to client msg')
             user = client.get_entity(PeerUser(send_id))
-            sec = None
+            sec = 5
             try:
                 client.send_message(user, text)
             except FloodWaitError as error:
