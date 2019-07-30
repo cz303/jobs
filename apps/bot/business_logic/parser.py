@@ -86,7 +86,7 @@ class Parser:
         if 'callback_query' in self.data:
             return self.data['callback_query']['message']['user']['username']
         elif 'inline_query' in self.data:
-            return self.data['inline_query']['user']['username']
-        else:
-            return self.data['message']['user'].get('username',
-                                                    'Неопознаный Суслик')
+            try:
+                return self.data['inline_query']['user']['username']
+            except KeyError:
+                return 'Неопознаный Суслик'

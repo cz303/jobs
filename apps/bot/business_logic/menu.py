@@ -643,7 +643,7 @@ class Menu:
 
     def send_message(self, text, user_id=None, reply_markup=None):
         return self.bot.send_message(
-            chat_id=user_id or self.chat_id,
+            chat_id=user_id if user_id else self.chat_id,
             text=text,
             parse_mode='HTML',
             reply_markup=reply_markup)

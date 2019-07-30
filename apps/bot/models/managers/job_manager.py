@@ -14,8 +14,10 @@ class JobManager(Manager):
     def update_position(self, position):
         job = Job.objects.filter(
             user_id=self.user_id).order_by('timestamp').reverse().first()
-        job.position = position
-        job.save()
+
+        if job:
+            job.position = position
+            job.save()
 
     def update_looking_for(self, looking_for):
         job = Job.objects.filter(
