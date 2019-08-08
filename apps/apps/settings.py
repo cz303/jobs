@@ -21,14 +21,6 @@ RAVEN_CONFIG = {
     'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
 }
 
-# import sentry_sdk
-# from sentry_sdk.integrations.django import DjangoIntegration
-#
-# sentry_sdk.init(
-#     dsn="https://10eab6d2b0a311e996bc4201c0a8d02b@sentry.io/1515162",
-#     integrations=[DjangoIntegration()]
-# )
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -46,7 +38,10 @@ HOST = os.environ.get('HOST', 'robosapiens.icu')
 
 DOMAIN = f'https://{HOST}'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    HOST,
+    'localhost',
+]
 
 # Application definition
 
