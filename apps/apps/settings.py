@@ -164,7 +164,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 TELEGRAM_URL = 'https://api.telegram.org'
 
 TOKEN = os.environ.get('TOKEN',
-                       '768289439:AAE8MKKPicNI-SVmemRGqKX-B_qibFrBUaA')
+                       '659414060:AAFwq-ZT-IJVkGGS78o4N4NFfw_1BkMIU5Q')
 
 URL = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
